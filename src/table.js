@@ -9,11 +9,10 @@ PJ.Table = new PJ.Class({
 
   init: function() {
     this.initializeView();
-//    this.initializeDataSource();
+    this.initializeDataSource();
 
     console.log('Creating new instance');
   },
-
 
   initializeView: function() {
     if (!this.view) {
@@ -23,6 +22,9 @@ PJ.Table = new PJ.Class({
   },
 
   initializeDataSource: function() {
+    if (!this.dataSource) {
+      this.dataSource = new PJ.ArrayDataSource({data: []});
+    }
     this.dataSource.initialize();
   }
 

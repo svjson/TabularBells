@@ -4,38 +4,60 @@
 
 var PJ = PJ || {};
 
-/**
- * Minimal Class-library to support table components
- */
-PJ.Class = (function() {
-  var klass = function() {
-    for (var prop in arguments[0]) {
-      this[prop] = arguments[0][prop];
+PJ.Class = function(specObj) {
+  var klass = function(obj) {    
+    for (var prop in obj) {
+      this[prop] = obj[prop];
     }
     this.init.apply(this, arguments);
   };
-
   klass.prototype.init = function() {};
+  
+  klass.fn = klass.prototype;
 
   klass.sub = function(obj) {
-    var subbed = obj.subbed;
-    for (var member in obj) {
-      klass.prototype[member] = obj[member];
-    }
-    if (subbed) subbed(klass);
-    return klass;
+    
   };
 
-  return klass;
-})();
+  klass.sub = function(obj) {
+    var extendedObj = {};
+    for (var prop in this.fn) {
+      extendedObj[prop] = this.fn[prop];
+    }
+    for (var prop in obj) {
+      extendedObj[prop] = obj[prop];
+    }
+    return new PJ.Class(extendedObj);
+  };
 
-PJ.DataSource = PJ.Class.sub({
+  klass.include = function(obj) {
+    for (var prop in obj) {
+      klass.fn[prop] = obj[prop];
+    }
+  };
+
+  if (specObj) {
+    klass.include(specObj);
+  }
+  
+  return klass;
+};
+
+PJ.DataSource = new PJ.Class({
+
+  initialize: function() {
+
+  }
   
 });
 
 
-PJ.TableView = PJ.Class.sub({
+PJ.TableView = new PJ.Class({
   
+  init: function() {
+    console.log('init TableView');
+  },
+
   initialize: function() {
     
   }
@@ -49,19 +71,31 @@ PJ.JQueryTableView = PJ.TableView.sub({
 /**
  * Table main class
  */
-PJ.Table = PJ.Class.sub({
+PJ.Table = new PJ.Class({
   
   view: null,
 
   dataSource: null,
 
-  init: function(config) {
-    if (!config.view) {
-      throw "No view specified.";
-    }
-
-    view.initialize();
+  init: function() {
+    this.initializeView();
+    this.initializeDataSource();
 
     console.log('Creating new instance');
+  },
+
+  initializeView: function() {
+    if (!this.view) {
+      throw new Error("No view specified.");
+    }
+    this.view.initialize();
+  },
+
+  initializeDataSource: function() {
+    if (!this.dataSource) {
+      this.dataSource = new PJ.ArrayDataSource({data: []});
+    }
+    this.dataSource.initialize();
   }
+
 });
