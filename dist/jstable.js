@@ -51,6 +51,16 @@ PJ.DataSource = new PJ.Class({
   
 });
 
+PJ.ArrayDataSource = PJ.DataSource.sub({
+
+  data: [],
+
+  init: function() {
+    
+  }
+  
+});
+
 
 PJ.TableView = new PJ.Class({
   
@@ -59,12 +69,30 @@ PJ.TableView = new PJ.Class({
   },
 
   initialize: function() {
-    
+    this.render();
+  },
+  
+  render: function() {
+
   }
 
 });
 
-PJ.JQueryTableView = PJ.TableView.sub({
+PJ.JQueryTemplateView = PJ.TableView.sub({
+  
+  target: null,
+
+  tableTemplate: '<table><tr><td>No content</td></tr></table>',
+
+  rowTemplate: '<tr><td>hej</td></tr>',
+
+  init: function() {
+    
+  },
+
+  render: function() {
+    this.target.append($(this.tableTemplate).tmpl());
+  }
 
 });
 
@@ -80,8 +108,6 @@ PJ.Table = new PJ.Class({
   init: function() {
     this.initializeView();
     this.initializeDataSource();
-
-    console.log('Creating new instance');
   },
 
   initializeView: function() {

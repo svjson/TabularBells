@@ -20,6 +20,7 @@ module.exports = function(grunt) {
 	      'src/class.js',
 
 	      'src/datasource.js',
+	      'src/array-datasource.js',
 
 	      'src/view.js',
 	      'src/jquery-template-view.js',

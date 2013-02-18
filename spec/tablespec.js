@@ -12,5 +12,5 @@ describe("Table", function() {
       new PJ.Table({ view: tableView }).view
     ).toEqual(tableView);
   });
+ 
 });
-

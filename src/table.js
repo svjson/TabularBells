@@ -10,8 +10,6 @@ PJ.Table = new PJ.Class({
   init: function() {
     this.initializeView();
     this.initializeDataSource();
-
-    console.log('Creating new instance');
   },
 
   initializeView: function() {

@@ -1,0 +1,23 @@
+<html>
+  <head>
+
+    <script type="text/javascript" src="../lib/jquery-1.8.2.min.js"> </script>
+    <script type="text/javascript" src="../lib/jquery.tmpl.min.js"> </script>
+    <script type="text/javascript" src="../dist/jstable.min.js"> </script>
+
+    <script type="text/javascript">
+      
+      $(function() {
+        var table = new PJ.Table({
+          view: new PJ.JQueryTemplateView({target: $('#table-container')})
+        });
+      });
+    </script>
+
+  </head>
+  <body>
+    <div id="table-container">
+
+    </div>
+  </body>
+</html>

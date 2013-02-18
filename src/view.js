@@ -6,7 +6,11 @@ PJ.TableView = new PJ.Class({
   },
 
   initialize: function() {
-    
+    this.render();
+  },
+  
+  render: function() {
+
   }
 
 });
