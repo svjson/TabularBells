@@ -1,3 +1,3 @@
-PJ.DataSource = PJ.Class.sub({
+PJ.DataSource = new PJ.Class({
   
 });

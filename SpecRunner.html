@@ -11,9 +11,11 @@
 
   <!-- include source files here... -->
   <script type="text/javascript" src="src/class.js"></script>
+  <script type="text/javascript" src="src/view.js"></script>
   <script type="text/javascript" src="src/table.js"></script>
 
   <!-- include spec files here... -->
+  <script type="text/javascript" src="spec/classspec.js"></script>
   <script type="text/javascript" src="spec/tablespec.js"></script>
 
   <script type="text/javascript">
@@ -24,7 +26,7 @@
       var htmlReporter = new jasmine.HtmlReporter();
 
       jasmineEnv.addReporter(htmlReporter);
-2
+
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };

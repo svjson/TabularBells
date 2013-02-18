@@ -1,19 +1,29 @@
 /**
  * Table main class
  */
-PJ.Table = PJ.Class.sub({
+PJ.Table = new PJ.Class({
   
   view: null,
 
   dataSource: null,
 
-  init: function(config) {
-    if (!config.view) {
-      throw "No view specified.";
-    }
-
-    view.initialize();
+  init: function() {
+    this.initializeView();
+//    this.initializeDataSource();
 
     console.log('Creating new instance');
+  },
+
+
+  initializeView: function() {
+    if (!this.view) {
+      throw new Error("No view specified.");
+    }
+    this.view.initialize();
+  },
+
+  initializeDataSource: function() {
+    this.dataSource.initialize();
   }
+
 });
