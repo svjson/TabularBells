@@ -11,22 +11,27 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
         'YOUR_NAME; Licensed MIT */'
     },
-    lint: {
-      files: ['grunt.js', 'lib/**/*.js', 'spec/**/*.js']
-    },
     qunit: {
       files: ['spec/**/*.html']
     },
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:lib/FILE_NAME.js>'],
-        dest: 'dist/FILE_NAME.js'
+        src: ['<banner:meta.banner>', 
+	      'src/class.js',
+
+	      'src/datasource.js',
+
+	      'src/view.js',
+	      'src/jquery-template-view.js',
+
+	      'src/table.js'],  // '<file_strip_banner:lib/FILE_NAME.js>'],
+        dest: 'dist/jstable.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/FILE_NAME.min.js'
+        dest: 'dist/jstable.min.js'
       }
     },
     watch: {
@@ -55,6 +60,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint qunit concat min');
+  grunt.registerTask('default', 'qunit concat min');
 
 };
