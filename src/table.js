@@ -7,6 +7,8 @@ PJ.Table = new PJ.Class({
 
   dataSource: null,
 
+  paginationStrategy: null,
+
   init: function() {
     this.initializeView();
     this.initializeDataSource();
