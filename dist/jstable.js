@@ -1,4 +1,4 @@
-/*! JSTABLE - v0.1.0 - 2013-02-18
+/*! JSTABLE - v0.1.0 - 2013-03-04
 * http://PROJECT_WEBSITE/
 * Copyright (c) 2013 YOUR_NAME; Licensed MIT */
 
@@ -55,8 +55,22 @@ PJ.ArrayDataSource = PJ.DataSource.sub({
 
   data: [],
 
-  init: function() {
-    
+  init: function(data) {
+    if (data) {
+      this.data = data;
+    }
+  },
+
+  size: function() {
+    return this.data.length;
+  },
+
+  get: function(query) {
+    if (query.from > this.data.length) return [];
+    var startAt = query.from;
+    var endAt = query.from + query.size;
+    if (endAt > this.data.length) endAt = this.data.length;
+    return this.data.slice(startAt, endAt);
   }
   
 });
@@ -104,6 +118,8 @@ PJ.Table = new PJ.Class({
   view: null,
 
   dataSource: null,
+
+  paginationStrategy: null,
 
   init: function() {
     this.initializeView();
