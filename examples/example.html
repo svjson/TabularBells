@@ -3,13 +3,22 @@
 
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"> </script>
-    <script type="text/javascript" src="../dist/jstable.min.js"> </script>
+    <script type="text/javascript" src="../dist/jstable.js"> </script>
 
     <script type="text/javascript">
       
       $(function() {
+        var columnModel = new PJ.BasicColumnModel({
+          columns: [
+            { index: 'name', header: 'Name of item' },
+            { index: 'age', header: 'Age' }
+          ]
+        });
+      
         var table = new PJ.Table({
-          view: new PJ.JQueryTemplateView({target: $('#table-container')})
+          dataSource: new PJ.ArrayDataSource([{ name: 'Apan', age: 1}, {name: 'Skrapan', age: 2}]),
+          view: new PJ.JQueryTemplateView({target: $('#table-container')}),
+          columnModel: columnModel
         });
       });
     </script>

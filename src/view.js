@@ -5,11 +5,18 @@ PJ.TableView = new PJ.Class({
     console.log('init TableView');
   },
 
-  initialize: function() {
-    this.render();
+  initialize: function(columnModel) {
+    this.render({
+      columnModel: columnModel,
+      data: []
+    });
   },
   
-  render: function() {
+  render: function(command) {
+
+  },
+
+  updateRows: function(data) {
 
   }
 

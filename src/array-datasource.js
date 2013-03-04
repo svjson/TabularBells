@@ -14,6 +14,7 @@ PJ.ArrayDataSource = PJ.DataSource.sub({
 
   get: function(query) {
     if (query.from > this.data.length) return [];
+    if (!query.size) return this.data;
     var startAt = query.from;
     var endAt = query.from + query.size;
     if (endAt > this.data.length) endAt = this.data.length;
