@@ -10,10 +10,11 @@ PJ.PaginationStrategy = new PJ.Class({
   view: new PJ.NoPaginationView(),
  
   initialize: function(dataSource) {    
+    this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
     this.view.render({
       pageSize: this.pageSize,
       dataSetSize: dataSource.size(),
-      pages: Math.ceil(dataSource.size() / this.pageSize),
+      pages: this.maxPage,
       currentPage: 1
     });
   }

@@ -14,11 +14,12 @@ PJ.Table = new PJ.Class({
   init: function() {
     this.initialize();
   },
-
+  
   initialize: function() {
     this.initializeDataSource();
     this.initializeView();
     this.initializePagination();
+
     this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
   },
 

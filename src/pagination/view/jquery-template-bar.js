@@ -11,6 +11,16 @@ PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
       var page = parseInt($(e.currentTarget).attr('data-page'));
       this.trigger('page-requested', {pageNumber: page});
     }));
+
+    this.target.find('.pgn-prev').on('click', this.proxy(function(e) {
+      this.trigger('page-step', -1);
+    }));
+
+    this.target.find('.pgn-next').on('click', this.proxy(function(e) {
+      this.trigger('page-step', 1);
+    }));
+
+    this.selectPage(paginationSpec.currentPage);
   }
 
 });

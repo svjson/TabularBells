@@ -36,7 +36,9 @@ module.exports = function(grunt) {
 	      'src/view.js',
 	      'src/jquery-template-view.js',
 
-	      'src/table.js'],  // '<file_strip_banner:lib/FILE_NAME.js>'],
+	      'src/table/table.js',
+	      'src/table/bootstrap-table.js'],  // '<file_strip_banner:lib/FILE_NAME.js>'],
+	
         dest: 'dist/jstable.js'
       }
     },

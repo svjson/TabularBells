@@ -115,6 +115,10 @@ PJ.PaginationView = new PJ.Class({
 
   render: function(paginationSpec) {
     
+  },
+
+  selectPage: function(pageNumber) {
+
   }
 
 });
@@ -138,6 +142,16 @@ PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
       var page = parseInt($(e.currentTarget).attr('data-page'));
       this.trigger('page-requested', {pageNumber: page});
     }));
+
+    this.target.find('.pgn-prev').on('click', this.proxy(function(e) {
+      this.trigger('page-step', -1);
+    }));
+
+    this.target.find('.pgn-next').on('click', this.proxy(function(e) {
+      this.trigger('page-step', 1);
+    }));
+
+    this.selectPage(paginationSpec.currentPage);
   }
 
 });
@@ -156,10 +170,11 @@ PJ.PaginationStrategy = new PJ.Class({
   view: new PJ.NoPaginationView(),
  
   initialize: function(dataSource) {    
+    this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
     this.view.render({
       pageSize: this.pageSize,
       dataSetSize: dataSource.size(),
-      pages: Math.ceil(dataSource.size() / this.pageSize),
+      pages: this.maxPage,
       currentPage: 1
     });
   }
@@ -183,9 +198,19 @@ PJ.PaginationBar = PJ.PaginationStrategy.sub({
 
   init: function() {
     this.view.bind('page-requested', this.proxy(function(data) {
-      this.currentPage = data.pageNumber;
-      this.trigger('pagination-changed');
+      this.selectPage(data.pageNumber);
     }));
+
+    this.view.bind('page-step', this.proxy(function(data) {
+      this.selectPage(this.currentPage + data);
+    }));
+  },
+
+  selectPage: function(pageNumber) {
+    if (pageNumber <= 0 || pageNumber > this.maxPage) return;
+    this.currentPage = pageNumber;
+    this.trigger('pagination-changed');
+    this.view.selectPage(this.currentPage);
   },
 
   getPageQuery: function() {
@@ -277,6 +302,10 @@ PJ.Table = new PJ.Class({
   paginationStrategy: new PJ.NoPagination(),
 
   init: function() {
+    this.initialize();
+  },
+  
+  initialize: function() {
     this.initializeDataSource();
     this.initializeView();
     this.initializePagination();
@@ -308,6 +337,49 @@ PJ.Table = new PJ.Class({
 
   initializePagination: function() {
     this.paginationStrategy.initialize(this.dataSource);
+  }
+
+});
+
+PJ.BootstrapTable = PJ.Table.sub({
+
+  init: function() {    
+    this.view = new PJ.BootstrapTableTemplateView({
+      target: this.tableElement
+    });
+
+    this.paginationStrategy = new PJ.PaginationBar({
+      view: new PJ.BootstrapPaginationTemplateView({
+         target: this.paginationElement
+      }),
+      pageSize: this.pageSize
+    });
+    this.initialize();
+  }
+
+});
+
+PJ.BootstrapTableTemplateView = PJ.JQueryTemplateView.sub({
+
+  tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>'
+
+});
+
+PJ.BootstrapPaginationTemplateView = PJ.JQueryTemplatePaginationView.sub({
+
+  paginationBarTemplate: '<div class="pagination-bar">\
+      <div class="pagination pagination-centered">\
+        <ul>\
+          <li><a style="margin-left: 10px" href="#" class="pgn-prev" title="Previous Page">&laquo;</a></li>\
+          {{each(idx,p) pages}} <li><a class="number pagination-page" href="#" data-page="${idx+1}">${idx+1}</a></li>{{/each}}\
+          <li><a style="margin-right: 10px" href="#" class="pgn-next" title="Next Page">&raquo;</a></li>\
+        </ul>\
+     </div>\
+   </div>',
+
+  selectPage: function(pageNumber) {
+    this.target.find('li').removeClass('active');
+    this.target.find('a[data-page="' + pageNumber + '"]').parent('li').addClass('active');
   }
 
 });
