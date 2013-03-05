@@ -14,6 +14,7 @@ PJ.Table = new PJ.Class({
   init: function() {
     this.initializeDataSource();
     this.initializeView();
+    this.initializePagination();
   },
 
   initializeView: function() {
@@ -32,6 +33,10 @@ PJ.Table = new PJ.Class({
       this.dataSource = new PJ.ArrayDataSource({data: []});
     }
     this.dataSource.initialize();
+  },
+
+  initializePagination: function() {
+    this.paginationStrategy.initialize(this.dataSource);
   }
 
 });

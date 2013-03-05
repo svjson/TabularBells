@@ -22,10 +22,14 @@ module.exports = function(grunt) {
 	      'src/datasource/datasource.js',
 	      'src/datasource/array-datasource.js',
 
+	      'src/pagination/view/pagination-view.js',
+	      'src/pagination/view/no-pagination-view.js',
+	      'src/pagination/view/jquery-template-bar.js',
+
 	      'src/pagination/pagination-strategy.js',
 	      'src/pagination/no-pagination.js',
 	      'src/pagination/pagination-bar.js',
-
+	      
 	      'src/columnmodel/basic-column-model.js',
 
 	      'src/view.js',

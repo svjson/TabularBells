@@ -1,4 +1,4 @@
-/*! JSTABLE - v0.1.0 - 2013-03-04
+/*! JSTABLE - v0.1.0 - 2013-03-05
 * http://PROJECT_WEBSITE/
 * Copyright (c) 2013 YOUR_NAME; Licensed MIT */
 
@@ -76,6 +76,31 @@ PJ.ArrayDataSource = PJ.DataSource.sub({
   
 });
 
+PJ.PaginationView = new PJ.Class({
+
+  render: function(paginationSpec) {
+    
+  }
+
+});
+
+PJ.NoPaginationView = PJ.PaginationView.sub({
+
+});
+
+PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
+
+  paginationBarTemplate: '<div>{{each(idx,p) pages}} [${idx+1}] {{/each}}</div>',
+
+  target: null,
+
+  render: function(paginationSpec) {
+    console.log(paginationSpec);
+    $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
+  }
+
+});
+
 /**
  * Abstract pagination spec
  */
@@ -83,8 +108,19 @@ PJ.PaginationStrategy = new PJ.Class({
 
   pageSize: 20,
 
-  currentPage: 1
+  currentPage: 1,
+
+  view: new PJ.NoPaginationView(),
  
+  initialize: function(dataSource) {    
+    this.view.render({
+      pageSize: this.pageSize,
+      dataSetSize: dataSource.size(),
+      pages: Math.ceil(dataSource.size() / this.pageSize),
+      currentPage: 1
+    });
+  }
+
 });
 
 
@@ -193,6 +229,7 @@ PJ.Table = new PJ.Class({
   init: function() {
     this.initializeDataSource();
     this.initializeView();
+    this.initializePagination();
   },
 
   initializeView: function() {
@@ -211,6 +248,10 @@ PJ.Table = new PJ.Class({
       this.dataSource = new PJ.ArrayDataSource({data: []});
     }
     this.dataSource.initialize();
+  },
+
+  initializePagination: function() {
+    this.paginationStrategy.initialize(this.dataSource);
   }
 
 });

@@ -10,20 +10,31 @@
       $(function() {
 
         var arrayData = [
-          { name: 'Peter Pan', employeeNo: 12345, department: '
+          { name: 'Peter Pan',           employeeNo: 12345, department: 'Sales' },
+          { name: 'Donnie Darko',        employeeNo: 23744, department: 'Psychology' },
+          { name: 'Dirk Gently',         employeeNo: 84273, department: 'Psychology' },
+          { name: 'Guybrush Threepwood', employeeNo: 23734, department: 'Treasure' },
+          { name: 'Indrid Kold',         employeeNo: 34663, department: 'Sales' },
+          { name: 'Calamity Jane',       employeeNo: 48474, department: 'Acquisition' },
+          { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' }
         ];
 
         var columnModel = new PJ.BasicColumnModel({
           columns: [
-            { index: 'name', header: 'Name of item' },
-            { index: 'age', header: 'Age' }
+            { index: 'name', header: 'Name' },
+            { index: 'employeeNo', header: 'Employee #' },
+            { index: 'department', header: 'Department' }
           ]
         });
       
         var table = new PJ.Table({
-          dataSource: new PJ.ArrayDataSource([{ name: 'Apan', age: 1}, {name: 'Skrapan', age: 2}]),
+          dataSource: new PJ.ArrayDataSource(arrayData),
           view: new PJ.JQueryTemplateView({target: $('#table-container')}),
-          columnModel: columnModel
+          columnModel: columnModel,
+          paginationStrategy: new PJ.PaginationBar({
+            pageSize: 5,
+            view: new PJ.JQueryTemplatePaginationView({target: $('#pagination-container')})
+          })
         });
       });
     </script>
@@ -32,6 +43,10 @@
   <body>
     <div id="table-container">
 
+    </div>
+
+    <div id="pagination-container">
+      
     </div>
   </body>
 </html>
