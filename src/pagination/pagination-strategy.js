@@ -19,3 +19,4 @@ PJ.PaginationStrategy = new PJ.Class({
   }
 
 });
+PJ.PaginationStrategy.include(PJ.Events);

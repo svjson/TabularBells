@@ -6,10 +6,18 @@ PJ.Class = function(specObj) {
       this[prop] = obj[prop];
     }
     this.init.apply(this, arguments);
+    
   };
   klass.prototype.init = function() {};
   
   klass.fn = klass.prototype;
+
+  klass.fn.proxy = function(fn) {
+    var self = this;
+    return function() {
+      return fn.apply(self, arguments);
+    };
+  };
 
   klass.sub = function(obj) {
     
@@ -27,6 +35,9 @@ PJ.Class = function(specObj) {
   };
 
   klass.include = function(obj) {
+    if (typeof(obj) == 'function') {
+      obj = obj();
+    }
     for (var prop in obj) {
       klass.fn[prop] = obj[prop];
     }

@@ -8,7 +8,7 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
 
   headerTemplate: '<th>${header}</th>',
 
-  rowTemplate: '{{each(i,row) data}}<tr>{{each(idx,col) columnModel.columns}}<td>${row[col.index]}</td>{{/each}}</tr>{{/each}}',
+  rowTemplate: '{{each(i,row) data}}<tr class="data-row">{{each(idx,col) columnModel.columns}}<td>${row[col.index]}</td>{{/each}}</tr>{{/each}}',
 
   init: function() {
     
@@ -26,9 +26,8 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
     if (command.data.length == 0) {
       $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
     } else {
-      console.log(command);
-      console.log(command.data.length + ' rows');
       this.target.find('.no-content-row').remove();
+      this.target.find('.data-row').remove();
       $(this.wrap(this.rowTemplate)).tmpl(command).appendTo(this.target.find('table tbody'));
     }
   },

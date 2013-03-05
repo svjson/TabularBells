@@ -15,6 +15,15 @@ PJ.Table = new PJ.Class({
     this.initializeDataSource();
     this.initializeView();
     this.initializePagination();
+
+    this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+  },
+
+  refreshTable: function() {
+    this.view.updateRows({
+      data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
+      columnModel: this.columnModel
+    });
   },
 
   initializeView: function() {
@@ -22,10 +31,7 @@ PJ.Table = new PJ.Class({
       throw new Error("No view specified.");
     }
     this.view.initialize(this.columnModel);
-    this.view.updateRows({
-      data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
-      columnModel: this.columnModel
-    });
+    this.refreshTable();
   },
 
   initializeDataSource: function() {

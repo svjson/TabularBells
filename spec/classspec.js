@@ -56,5 +56,28 @@ describe("Class", function() {
     expect(p.fruit).toEqual('banana');
 
   });
+  
+  it("should be possible to use the proxy-function to retain class scope in closures", function() {
+    
+    var Person = new PJ.Class({
+      firstName: null,
+
+      lastName: null,
+      
+      fullName: function() {
+	return this.proxy(function() {
+	  return this.firstName + ' ' + this.lastName;
+	})();
+      }
+    });
+
+    var p = new Person({
+      firstName: 'Roberta',
+      lastName: 'Sparrow'
+    });
+
+    expect(p.fullName()).toEqual('Roberta Sparrow');
+
+  });
      
 });

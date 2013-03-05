@@ -5,3 +5,5 @@ PJ.PaginationView = new PJ.Class({
   }
 
 });
+
+PJ.PaginationView.include(PJ.Events);

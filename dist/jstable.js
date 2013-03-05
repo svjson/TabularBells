@@ -10,10 +10,18 @@ PJ.Class = function(specObj) {
       this[prop] = obj[prop];
     }
     this.init.apply(this, arguments);
+    
   };
   klass.prototype.init = function() {};
   
   klass.fn = klass.prototype;
+
+  klass.fn.proxy = function(fn) {
+    var self = this;
+    return function() {
+      return fn.apply(self, arguments);
+    };
+  };
 
   klass.sub = function(obj) {
     
@@ -31,6 +39,9 @@ PJ.Class = function(specObj) {
   };
 
   klass.include = function(obj) {
+    if (typeof(obj) == 'function') {
+      obj = obj();
+    }
     for (var prop in obj) {
       klass.fn[prop] = obj[prop];
     }
@@ -43,9 +54,29 @@ PJ.Class = function(specObj) {
   return klass;
 };
 
-PJ.Events = {
-  
+PJ.Events = function() {
+  return {
+    listeners: {},
+
+    trigger: function(eventType, eventData) {
+      this.getHandlers(eventType).forEach(function(fn) {
+	fn(eventData);
+      });
+    },
+    
+    bind: function(eventType, handlerFn) {
+      this.getHandlers(eventType).push(handlerFn);
+    },
+    
+    getHandlers: function(eventType) {
+      if (!this.listeners[eventType]) {
+	this.listeners[eventType] = [];
+      }
+      return this.listeners[eventType];
+    }
+  };
 };
+  
 
 PJ.DataSource = new PJ.Class({
 
@@ -88,21 +119,30 @@ PJ.PaginationView = new PJ.Class({
 
 });
 
+PJ.PaginationView.include(PJ.Events);
+
 PJ.NoPaginationView = PJ.PaginationView.sub({
 
 });
 
 PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
 
-  paginationBarTemplate: '<div>{{each(idx,p) pages}} [${idx+1}] {{/each}}</div>',
+  paginationBarTemplate: '<div>{{each(idx,p) pages}} <a class="pagination-page" href="#" data-page="${idx+1}">[${idx+1}</a>] {{/each}}</div>',
 
   target: null,
 
   render: function(paginationSpec) {
     $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
+
+    this.target.find('.pagination-page').on('click', this.proxy(function(e) {
+      var page = parseInt($(e.currentTarget).attr('data-page'));
+      this.trigger('page-requested', {pageNumber: page});
+    }));
   }
 
 });
+
+// PJ.JQueryTemplatePaginationView.include(PJ.Events);
 
 /**
  * Abstract pagination spec
@@ -125,6 +165,7 @@ PJ.PaginationStrategy = new PJ.Class({
   }
 
 });
+PJ.PaginationStrategy.include(PJ.Events);
 
 
 PJ.NoPagination = PJ.PaginationStrategy.sub({
@@ -139,6 +180,13 @@ PJ.NoPagination = PJ.PaginationStrategy.sub({
 
 
 PJ.PaginationBar = PJ.PaginationStrategy.sub({
+
+  init: function() {
+    this.view.bind('page-requested', this.proxy(function(data) {
+      this.currentPage = data.pageNumber;
+      this.trigger('pagination-changed');
+    }));
+  },
 
   getPageQuery: function() {
     return { from: (this.currentPage-1) * this.pageSize,
@@ -185,7 +233,7 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
 
   headerTemplate: '<th>${header}</th>',
 
-  rowTemplate: '{{each(i,row) data}}<tr>{{each(idx,col) columnModel.columns}}<td>${row[col.index]}</td>{{/each}}</tr>{{/each}}',
+  rowTemplate: '{{each(i,row) data}}<tr class="data-row">{{each(idx,col) columnModel.columns}}<td>${row[col.index]}</td>{{/each}}</tr>{{/each}}',
 
   init: function() {
     
@@ -203,9 +251,8 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
     if (command.data.length == 0) {
       $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
     } else {
-      console.log(command);
-      console.log(command.data.length + ' rows');
       this.target.find('.no-content-row').remove();
+      this.target.find('.data-row').remove();
       $(this.wrap(this.rowTemplate)).tmpl(command).appendTo(this.target.find('table tbody'));
     }
   },
@@ -233,6 +280,15 @@ PJ.Table = new PJ.Class({
     this.initializeDataSource();
     this.initializeView();
     this.initializePagination();
+
+    this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+  },
+
+  refreshTable: function() {
+    this.view.updateRows({
+      data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
+      columnModel: this.columnModel
+    });
   },
 
   initializeView: function() {
@@ -240,10 +296,7 @@ PJ.Table = new PJ.Class({
       throw new Error("No view specified.");
     }
     this.view.initialize(this.columnModel);
-    this.view.updateRows({
-      data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
-      columnModel: this.columnModel
-    });
+    this.refreshTable();
   },
 
   initializeDataSource: function() {
