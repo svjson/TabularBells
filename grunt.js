@@ -17,7 +17,8 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: ['<banner:meta.banner>', 
-	      'src/class.js',
+	      'src/class/class.js',
+	      'src/class/events.js',
 
 	      'src/datasource/datasource.js',
 	      'src/datasource/array-datasource.js',

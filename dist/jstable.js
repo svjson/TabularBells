@@ -43,6 +43,10 @@ PJ.Class = function(specObj) {
   return klass;
 };
 
+PJ.Events = {
+  
+};
+
 PJ.DataSource = new PJ.Class({
 
   initialize: function() {
@@ -95,7 +99,6 @@ PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
   target: null,
 
   render: function(paginationSpec) {
-    console.log(paginationSpec);
     $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
   }
 
