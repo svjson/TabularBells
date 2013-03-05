@@ -19,11 +19,12 @@ module.exports = function(grunt) {
         src: ['<banner:meta.banner>', 
 	      'src/class.js',
 
-	      'src/datasource.js',
-	      'src/array-datasource.js',
+	      'src/datasource/datasource.js',
+	      'src/datasource/array-datasource.js',
 
 	      'src/pagination/pagination-strategy.js',
 	      'src/pagination/no-pagination.js',
+	      'src/pagination/pagination-bar.js',
 
 	      'src/columnmodel/basic-column-model.js',
 

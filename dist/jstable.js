@@ -46,7 +46,7 @@ PJ.Class = function(specObj) {
 PJ.DataSource = new PJ.Class({
 
   initialize: function() {
-
+    
   }
   
 });
@@ -96,6 +96,16 @@ PJ.NoPagination = PJ.PaginationStrategy.sub({
     return {from: 0};
   }
   
+});
+
+
+PJ.PaginationBar = PJ.PaginationStrategy.sub({
+
+  getPageQuery: function() {
+    return { from: (this.currentPage-1) * this.pageSize,
+	     size: this.pageSize };
+  }
+
 });
 
 PJ.BasicColumnModel = new PJ.Class({
