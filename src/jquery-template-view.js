@@ -4,7 +4,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
   tableTemplate: '<table><tr class="header-row"></tr></table>',
 
-  noContentRow: '<tr class="no-content-row"><td>No content</td></tr>',
+  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">No content</td></tr>',
 
   headerTemplate: '<th>${header}</th>',
 
@@ -52,6 +52,9 @@ TB.JQueryTemplateView = TB.TableView.sub({
 	$(this.wrap(this.headerTemplate)).tmpl(column).appendTo(this.target.find('.header-row'));
       }
     }));
+    if (command.columnModel.showActions()) {
+      $(this.wrap(this.headerTemplate)).tmpl({header: 'Actions'}).appendTo(this.target.find('.header-row'));
+    }
     if (command.data) {
       this.updateRows(command);
     }
@@ -71,7 +74,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
     if (command.data.length == 0) {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
-      $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
+      $(this.wrap(this.noContentRow)).tmpl({noofColumns: command.columnModel.visibleColumns()}).appendTo(this.target.find('table tbody'));
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();

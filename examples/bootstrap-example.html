@@ -61,6 +61,10 @@
           table.dataSource.loadData(androidCompany); 
         });
 
+        $('.empty-data-set').click(function() {
+          table.dataSource.loadData([]); 
+        });
+
       });
     </script>
 
@@ -76,7 +80,8 @@
 
     <div style="text-align: center"> 
       <a href="#" class="human-company">Human Company</a> |
-      <a href="#" class="android-company">Android Company</a>
+      <a href="#" class="android-company">Android Company</a> |
+      <a href="#" class="empty-data-set">Empty</a>
     </div>
   </body>
 </html>
