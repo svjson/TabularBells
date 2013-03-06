@@ -8,19 +8,25 @@
 
     <script type="text/javascript" src="../dist/tabularbells-0.0.1.js"> </script>
     <script type="text/javascript">
+
+      var humanCompany = [
+        { name: 'Peter Pan',           employeeNo: 12345, department: 'Sales' },
+        { name: 'Donnie Darko',        employeeNo: 23744, department: 'Psychology' },
+        { name: 'Dirk Gently',         employeeNo: 84273, department: 'Psychology' },
+        { name: 'Guybrush Threepwood', employeeNo: 23734, department: 'Treasure' },
+        { name: 'Indrid Kold',         employeeNo: 34663, department: 'Sales' },
+        { name: 'Calamity Jane',       employeeNo: 48474, department: 'Acquisition' },
+        { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' },
+        { name: 'Mary Poppins',        employeeNo: 72663, department: 'R&D' }
+      ];
+
+      var androidCompany = [
+        { name: 'Unit XBF876',         employeeNo: 12375, department: 'Extermination' },
+        { name: 'Unit FFB777',         employeeNo: 28347, department: 'Assimilation' },
+        { name: 'Unit NBE834',         employeeNo: 74745, department: 'Monitoring' }
+      ];
       
       $(function() {
-
-        var arrayData = [
-          { name: 'Peter Pan',           employeeNo: 12345, department: 'Sales' },
-          { name: 'Donnie Darko',        employeeNo: 23744, department: 'Psychology' },
-          { name: 'Dirk Gently',         employeeNo: 84273, department: 'Psychology' },
-          { name: 'Guybrush Threepwood', employeeNo: 23734, department: 'Treasure' },
-          { name: 'Indrid Kold',         employeeNo: 34663, department: 'Sales' },
-          { name: 'Calamity Jane',       employeeNo: 48474, department: 'Acquisition' },
-          { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' },
-          { name: 'Mary Poppins',        employeeNo: 72663, department: 'R&D' }
-        ];
 
         var columnModel = new TB.BasicColumnModel({
           columns: [
@@ -36,7 +42,7 @@
         });
       
         var table = new TB.BootstrapTable({
-          dataSource: new TB.ArrayDataSource(arrayData),
+          dataSource: new TB.ArrayDataSource(humanCompany),
           tableElement: $('#table-container'),
           pageSize: 5,
           columnModel: columnModel,
@@ -46,6 +52,15 @@
             'delete': 'icon-remove'
           }
         });
+
+        $('.human-company').click(function() {
+          table.dataSource.loadData(humanCompany);
+        });
+
+        $('.android-company').click(function() {
+          table.dataSource.loadData(androidCompany); 
+        });
+
       });
     </script>
 
@@ -57,6 +72,11 @@
 
     <div id="pagination-container">
       
+    </div>
+
+    <div style="text-align: center"> 
+      <a href="#" class="human-company">Human Company</a> |
+      <a href="#" class="android-company">Android Company</a>
     </div>
   </body>
 </html>

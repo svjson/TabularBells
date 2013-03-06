@@ -19,6 +19,12 @@ TB.ArrayDataSource = TB.DataSource.sub({
     var endAt = query.from + query.size;
     if (endAt > this.data.length) endAt = this.data.length;
     return this.data.slice(startAt, endAt);
+  },
+  
+  loadData: function(data) {
+    this.data = data;
+    this.trigger('data-changed', data);
   }
   
 });
+TB.DataSource.include(TB.Events);

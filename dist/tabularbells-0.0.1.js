@@ -86,6 +86,7 @@ TB.DataSource = new TB.Class({
   }
   
 });
+TB.DataSource.include(TB.Events);
 
 TB.ArrayDataSource = TB.DataSource.sub({
 
@@ -108,9 +109,15 @@ TB.ArrayDataSource = TB.DataSource.sub({
     var endAt = query.from + query.size;
     if (endAt > this.data.length) endAt = this.data.length;
     return this.data.slice(startAt, endAt);
+  },
+  
+  loadData: function(data) {
+    this.data = data;
+    this.trigger('data-changed', data);
   }
   
 });
+TB.DataSource.include(TB.Events);
 
 TB.PaginationView = new TB.Class({
 
@@ -137,6 +144,8 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
   target: null,
 
   render: function(paginationSpec) {
+    this.target.html('');
+
     $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
 
     this.target.find('.pagination-page').on('click', this.proxy(function(e) {
@@ -170,11 +179,12 @@ TB.PaginationStrategy = new TB.Class({
  
   initialize: function(dataSource) {    
     this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
+    if (this.currentPage > this.maxPage) this.currentPage = this.maxPage;
     this.view.render({
       pageSize: this.pageSize,
       dataSetSize: dataSource.size(),
       pages: this.maxPage,
-      currentPage: 1
+      currentPage: this.currentPage
     });
   }
 
@@ -231,7 +241,7 @@ TB.BasicColumnModel = new TB.Class({
 TB.TableView = new TB.Class({
   
   init: function() {
-    console.log('init TableView');
+
   },
 
   initialize: function(columnModel) {
@@ -322,6 +332,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
     this.currentDataSet = command.data;
     
     if (command.data.length == 0) {
+      this.target.find('.no-content-row').remove();
+      this.target.find('.data-row').remove();
       $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
     } else {
       this.target.find('.no-content-row').remove();
@@ -361,6 +373,8 @@ TB.Table = new TB.Class({
     this.initializePagination();
 
     this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+    this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
+    this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
   },
 
   refreshTable: function() {
@@ -380,7 +394,7 @@ TB.Table = new TB.Class({
 
   initializeDataSource: function() {
     if (!this.dataSource) {
-      this.dataSource = new TB.ArrayDataSource({data: []});
+      this.dataSource = new TB.ArrayDataSource([]);
     }
     this.dataSource.initialize();
   },

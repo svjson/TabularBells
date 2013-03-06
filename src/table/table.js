@@ -21,6 +21,8 @@ TB.Table = new TB.Class({
     this.initializePagination();
 
     this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+    this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
+    this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
   },
 
   refreshTable: function() {
@@ -40,7 +42,7 @@ TB.Table = new TB.Class({
 
   initializeDataSource: function() {
     if (!this.dataSource) {
-      this.dataSource = new TB.ArrayDataSource({data: []});
+      this.dataSource = new TB.ArrayDataSource([]);
     }
     this.dataSource.initialize();
   },

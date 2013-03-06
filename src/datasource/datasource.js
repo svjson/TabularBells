@@ -5,3 +5,4 @@ TB.DataSource = new TB.Class({
   }
   
 });
+TB.DataSource.include(TB.Events);

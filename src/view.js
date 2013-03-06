@@ -2,7 +2,7 @@
 TB.TableView = new TB.Class({
   
   init: function() {
-    console.log('init TableView');
+
   },
 
   initialize: function(columnModel) {

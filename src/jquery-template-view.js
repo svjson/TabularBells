@@ -69,6 +69,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
     this.currentDataSet = command.data;
     
     if (command.data.length == 0) {
+      this.target.find('.no-content-row').remove();
+      this.target.find('.data-row').remove();
       $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
     } else {
       this.target.find('.no-content-row').remove();
