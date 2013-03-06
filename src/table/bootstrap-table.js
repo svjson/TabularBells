@@ -1,13 +1,13 @@
-PJ.BootstrapTable = PJ.Table.sub({
+TB.BootstrapTable = TB.Table.sub({
 
   init: function() {    
-    this.view = new PJ.BootstrapTableTemplateView({
+    this.view = new TB.BootstrapTableTemplateView({
       target: this.tableElement,
       actionData: !this.actionData ? {} : this.actionData
     });
 
-    this.paginationStrategy = new PJ.PaginationBar({
-      view: new PJ.BootstrapPaginationTemplateView({
+    this.paginationStrategy = new TB.PaginationBar({
+      view: new TB.BootstrapPaginationTemplateView({
          target: this.paginationElement
       }),
       pageSize: this.pageSize
@@ -17,7 +17,7 @@ PJ.BootstrapTable = PJ.Table.sub({
 
 });
 
-PJ.BootstrapTableTemplateView = PJ.JQueryTemplateView.sub({
+TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 
   tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>',
 
@@ -37,7 +37,7 @@ PJ.BootstrapTableTemplateView = PJ.JQueryTemplateView.sub({
 
 });
 
-PJ.BootstrapPaginationTemplateView = PJ.JQueryTemplatePaginationView.sub({
+TB.BootstrapPaginationTemplateView = TB.JQueryTemplatePaginationView.sub({
 
   paginationBarTemplate: '<div class="pagination-bar">\
       <div class="pagination pagination-centered">\

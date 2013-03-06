@@ -1,4 +1,4 @@
-PJ.DataSource = new PJ.Class({
+TB.DataSource = new TB.Class({
 
   initialize: function() {
     

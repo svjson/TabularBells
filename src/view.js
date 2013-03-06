@@ -1,5 +1,5 @@
 
-PJ.TableView = new PJ.Class({
+TB.TableView = new TB.Class({
   
   init: function() {
     console.log('init TableView');

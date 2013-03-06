@@ -2,8 +2,8 @@ describe("Events", function() {
   
   it('should be possible to use a class instance as event bus when Events is included', function() {
     
-    var Thingummybob = new PJ.Class();
-    Thingummybob.include(PJ.Events);
+    var Thingummybob = new TB.Class();
+    Thingummybob.include(TB.Events);
 
     var t = new Thingummybob();
     

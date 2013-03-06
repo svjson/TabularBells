@@ -1,13 +1,13 @@
 /**
  * Abstract pagination spec
  */
-PJ.PaginationStrategy = new PJ.Class({
+TB.PaginationStrategy = new TB.Class({
 
   pageSize: 20,
 
   currentPage: 1,
 
-  view: new PJ.NoPaginationView(),
+  view: new TB.NoPaginationView(),
  
   initialize: function(dataSource) {    
     this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
@@ -20,4 +20,4 @@ PJ.PaginationStrategy = new PJ.Class({
   }
 
 });
-PJ.PaginationStrategy.include(PJ.Events);
+TB.PaginationStrategy.include(TB.Events);

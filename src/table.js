@@ -1,7 +1,7 @@
 /**
  * Table main class
  */
-PJ.Table = new PJ.Class({
+TB.Table = new TB.Class({
   
   view: null,
 
@@ -9,7 +9,7 @@ PJ.Table = new PJ.Class({
 
   columnModel: null,
 
-  paginationStrategy: new PJ.NoPagination(),
+  paginationStrategy: new TB.NoPagination(),
 
   init: function() {
     this.initialize();
@@ -44,7 +44,7 @@ PJ.Table = new PJ.Class({
 
   initializeDataSource: function() {
     if (!this.dataSource) {
-      this.dataSource = new PJ.ArrayDataSource({data: []});
+      this.dataSource = new TB.ArrayDataSource({data: []});
     }
     this.dataSource.initialize();
   },

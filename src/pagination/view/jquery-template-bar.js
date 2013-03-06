@@ -1,4 +1,4 @@
-PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
+TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
 
   paginationBarTemplate: '<div>{{each(idx,p) pages}} <a class="pagination-page" href="#" data-page="${idx+1}">[${idx+1}</a>] {{/each}}</div>',
 
@@ -24,5 +24,3 @@ PJ.JQueryTemplatePaginationView = PJ.PaginationView.sub({
   }
 
 });
-
-// PJ.JQueryTemplatePaginationView.include(PJ.Events);

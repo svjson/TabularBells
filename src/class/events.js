@@ -1,4 +1,4 @@
-PJ.Events = function() {
+TB.Events = function() {
   return {
     listeners: {},
 

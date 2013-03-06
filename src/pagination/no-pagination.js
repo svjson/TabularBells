@@ -1,5 +1,5 @@
 
-PJ.NoPagination = PJ.PaginationStrategy.sub({
+TB.NoPagination = TB.PaginationStrategy.sub({
 
   maxResults: 50,
   

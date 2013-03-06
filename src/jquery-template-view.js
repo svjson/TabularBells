@@ -1,4 +1,4 @@
-PJ.JQueryTemplateView = PJ.TableView.sub({
+TB.JQueryTemplateView = TB.TableView.sub({
   
   target: null,
 
@@ -83,4 +83,4 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
 
 });
 
-PJ.JQueryTemplateView.include(PJ.Events);
+TB.JQueryTemplateView.include(TB.Events);

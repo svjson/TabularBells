@@ -4,12 +4,12 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.1.0',
-      banner: '/*! JSTABLE - v<%= meta.version %> - ' +
+      version: '0.0.1',
+      banner: '/*! TabularBells - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://PROJECT_WEBSITE/\n' +
+        '* http://www.github.com/svjson/tabularbells/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
-        'YOUR_NAME; Licensed MIT */'
+        'Sven Johansson; Licensed MIT */'
     },
     qunit: {
       files: ['spec/**/*.html']
@@ -39,13 +39,13 @@ module.exports = function(grunt) {
 	      'src/table/table.js',
 	      'src/table/bootstrap-table.js'],  // '<file_strip_banner:lib/FILE_NAME.js>'],
 	
-        dest: 'dist/jstable.js'
+        dest: 'dist/tabularbells-<%= meta.version %>.js'
       }
     },
     min: {
       dist: {
         src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-        dest: 'dist/jstable.min.js'
+        dest: 'dist/tabularbells-<%= meta.version %>.min.js'
       }
     },
     watch: {

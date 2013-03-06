@@ -1,6 +1,7 @@
-var PJ = PJ || {};
+var TabularBells = TabularBells || {};
+var TB = TB || TabularBells;
 
-PJ.Class = function(specObj) {
+TB.Class = function(specObj) {
   var klass = function(obj) {    
     for (var prop in obj) {
       this[prop] = obj[prop];
@@ -31,7 +32,7 @@ PJ.Class = function(specObj) {
     for (var prop in obj) {
       extendedObj[prop] = obj[prop];
     }
-    return new PJ.Class(extendedObj);
+    return new TB.Class(extendedObj);
   };
 
   klass.include = function(obj) {

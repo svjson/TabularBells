@@ -1,4 +1,4 @@
-PJ.ArrayDataSource = PJ.DataSource.sub({
+TB.ArrayDataSource = TB.DataSource.sub({
 
   data: [],
 

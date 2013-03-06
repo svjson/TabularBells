@@ -1,5 +1,5 @@
 
-PJ.PaginationBar = PJ.PaginationStrategy.sub({
+TB.PaginationBar = TB.PaginationStrategy.sub({
 
   init: function() {
     this.view.bind('page-requested', this.proxy(function(data) {

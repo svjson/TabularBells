@@ -1,4 +1,4 @@
-PJ.PaginationView = new PJ.Class({
+TB.PaginationView = new TB.Class({
 
   render: function(paginationSpec) {
     
@@ -10,4 +10,4 @@ PJ.PaginationView = new PJ.Class({
 
 });
 
-PJ.PaginationView.include(PJ.Events);
+TB.PaginationView.include(TB.Events);

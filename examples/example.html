@@ -1,6 +1,5 @@
 <html>
   <head>
-
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"> </script>
     <script type="text/javascript" src="../dist/jstable.js"> </script>
@@ -19,7 +18,7 @@
           { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' }
         ];
 
-        var columnModel = new PJ.BasicColumnModel({
+        var columnModel = new TB.BasicColumnModel({
           columns: [
             { index: 'name', header: 'Name' },
             { index: 'employeeNo', header: 'Employee #' },
@@ -31,13 +30,13 @@
           ]
         });
       
-        var table = new PJ.Table({
-          dataSource: new PJ.ArrayDataSource(arrayData),
-          view: new PJ.JQueryTemplateView({target: $('#table-container')}),
+        var table = new TB.Table({
+          dataSource: new TB.ArrayDataSource(arrayData),
+          view: new TB.JQueryTemplateView({target: $('#table-container')}),
           columnModel: columnModel,
-          paginationStrategy: new PJ.PaginationBar({
+          paginationStrategy: new TB.PaginationBar({
             pageSize: 5,
-            view: new PJ.JQueryTemplatePaginationView({target: $('#pagination-container')})
+            view: new TB.JQueryTemplatePaginationView({target: $('#pagination-container')})
           })
         });
       });

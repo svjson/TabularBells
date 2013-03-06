@@ -22,7 +22,7 @@
           { name: 'Mary Poppins',        employeeNo: 72663, department: 'R&D' }
         ];
 
-        var columnModel = new PJ.BasicColumnModel({
+        var columnModel = new TB.BasicColumnModel({
           columns: [
             { index: 'id', header: 'Should be hidden', hidden: true },
             { index: 'name', header: 'Name' },
@@ -35,8 +35,8 @@
           ]
         });
       
-        var table = new PJ.BootstrapTable({
-          dataSource: new PJ.ArrayDataSource(arrayData),
+        var table = new TB.BootstrapTable({
+          dataSource: new TB.ArrayDataSource(arrayData),
           tableElement: $('#table-container'),
           pageSize: 5,
           columnModel: columnModel,

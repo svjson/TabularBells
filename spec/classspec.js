@@ -1,7 +1,7 @@
 describe("Class", function() {
 
   it("should be possible to call functions on class instance", function() {
-    var Person = new PJ.Class({
+    var Person = new TB.Class({
       greeting: function() {
 	return "hello!";      
       }
@@ -13,7 +13,7 @@ describe("Class", function() {
   });
 
   it("should be possible to pass argument object to constructor", function() {
-    var Person = new PJ.Class({
+    var Person = new TB.Class({
       init: function(args) {
 	this.name = args.name;
       },
@@ -28,7 +28,7 @@ describe("Class", function() {
   });
 
   it("should be possible to extend a class and inherit a function", function() {
-    var Person = new PJ.Class({
+    var Person = new TB.Class({
       init: function(args) {
 	this.greeting = args.greeting;
       },
@@ -48,7 +48,7 @@ describe("Class", function() {
 
   it("should add all constructor object arguments as members to instance", function() {
     
-    var Person = new PJ.Class({});
+    var Person = new TB.Class({});
     
     var p = new Person({ field: 'value', fruit: 'banana'});
 
@@ -59,7 +59,7 @@ describe("Class", function() {
   
   it("should be possible to use the proxy-function to retain class scope in closures", function() {
     
-    var Person = new PJ.Class({
+    var Person = new TB.Class({
       firstName: null,
 
       lastName: null,

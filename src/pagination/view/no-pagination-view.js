@@ -1,3 +1,3 @@
-PJ.NoPaginationView = PJ.PaginationView.sub({
+TB.NoPaginationView = TB.PaginationView.sub({
 
 });
