@@ -265,7 +265,9 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
   rowTemplate: '{{each(i,row) data}}\
     <tr class="data-row">\
       {{each(idx,col) columnModel.columns}}\
-        <td>${row[col.index]}</td>\
+        {{if !col.hidden}}\
+          <td>${row[col.index]}</td>\
+        {{/if}}\
       {{/each}}\
       {{if columnModel.showActions()}}\
         <td>\
@@ -299,7 +301,11 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
 
   render: function(command) {
     $(this.wrap(this.tableTemplate)).tmpl().appendTo(this.target);
-    $(this.wrap(this.headerTemplate)).tmpl(command.columnModel.columns).appendTo(this.target.find('.header-row'));
+    command.columnModel.columns.forEach(this.proxy(function(column) {
+      if (!column.hidden) {
+	$(this.wrap(this.headerTemplate)).tmpl(column).appendTo(this.target.find('.header-row'));
+      }
+    }));
     if (command.data) {
       this.updateRows(command);
     }
