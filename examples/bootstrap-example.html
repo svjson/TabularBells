@@ -18,7 +18,8 @@
           { name: 'Guybrush Threepwood', employeeNo: 23734, department: 'Treasure' },
           { name: 'Indrid Kold',         employeeNo: 34663, department: 'Sales' },
           { name: 'Calamity Jane',       employeeNo: 48474, department: 'Acquisition' },
-          { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' }
+          { name: 'Rose Tyler',          employeeNo: 97757, department: 'Sales' },
+          { name: 'Mary Poppins',        employeeNo: 72663, department: 'R&D' }
         ];
 
         var columnModel = new PJ.BasicColumnModel({
@@ -26,6 +27,10 @@
             { index: 'name', header: 'Name' },
             { index: 'employeeNo', header: 'Employee #' },
             { index: 'department', header: 'Department' }
+          ],
+          actions: [
+            { id: 'view', label: 'View'}, 
+            { id: 'delete', label: 'Delete'}
           ]
         });
       
@@ -34,7 +39,11 @@
           tableElement: $('#table-container'),
           pageSize: 5,
           columnModel: columnModel,
-          paginationElement: $('#pagination-container')
+          paginationElement: $('#pagination-container'),
+          actionData: {
+            'view': 'icon-eye-open',
+            'delete': 'icon-remove'
+          }
         });
       });
     </script>

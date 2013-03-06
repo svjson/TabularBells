@@ -20,6 +20,7 @@ PJ.Table = new PJ.Class({
     this.initializeView();
     this.initializePagination();
     this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+    this.view.bind('action-requested', this.proxy(this.actionRequested));
   },
 
   refreshTable: function() {
@@ -27,6 +28,10 @@ PJ.Table = new PJ.Class({
       data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
       columnModel: this.columnModel
     });
+  },
+
+  actionRequested: function(actionData) {
+    this.trigger('action-invoked', actionData);
   },
 
   initializeView: function() {

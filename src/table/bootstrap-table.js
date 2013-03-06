@@ -2,7 +2,8 @@ PJ.BootstrapTable = PJ.Table.sub({
 
   init: function() {    
     this.view = new PJ.BootstrapTableTemplateView({
-      target: this.tableElement
+      target: this.tableElement,
+      actionData: !this.actionData ? {} : this.actionData
     });
 
     this.paginationStrategy = new PJ.PaginationBar({
@@ -18,7 +19,21 @@ PJ.BootstrapTable = PJ.Table.sub({
 
 PJ.BootstrapTableTemplateView = PJ.JQueryTemplateView.sub({
 
-  tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>'
+  tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>',
+
+  actionsTemplate: '<div class="actions"><ul style="list-style-type: none;">{{each(idx,action) columnModel.actions}}\
+    {{html actionFormatter(action)}}\
+  {{/each}}</ul></div>',
+
+  actionData: {},
+
+  actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
+
+  actionFormatter: function(action) {
+    var span = $('<span></span>');
+    $(this.wrap(this.actionTemplate)).tmpl({action: action, actionData: this.actionData}).appendTo(span);
+    return span.html();    
+  }
 
 });
 

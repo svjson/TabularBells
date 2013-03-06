@@ -1,4 +1,4 @@
-/*! JSTABLE - v0.1.0 - 2013-03-05
+/*! JSTABLE - v0.1.0 - 2013-03-06
 * http://PROJECT_WEBSITE/
 * Copyright (c) 2013 YOUR_NAME; Licensed MIT */
 
@@ -221,6 +221,10 @@ PJ.PaginationBar = PJ.PaginationStrategy.sub({
 });
 
 PJ.BasicColumnModel = new PJ.Class({
+
+  showActions: function() {
+    return this.actions != null && this.actions.length > 0;
+  }
   
 });
 
@@ -258,7 +262,36 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
 
   headerTemplate: '<th>${header}</th>',
 
-  rowTemplate: '{{each(i,row) data}}<tr class="data-row">{{each(idx,col) columnModel.columns}}<td>${row[col.index]}</td>{{/each}}</tr>{{/each}}',
+  rowTemplate: '{{each(i,row) data}}\
+    <tr class="data-row">\
+      {{each(idx,col) columnModel.columns}}\
+        <td>${row[col.index]}</td>\
+      {{/each}}\
+      {{if columnModel.showActions()}}\
+        <td>\
+          {{html layoutActions(columnModel, row)}}\
+        </td>\
+      {{/if}}\
+    </tr>\
+  {{/each}}',
+
+  actionsTemplate: '{{each(idx,action) columnModel.actions}}\
+      {{html actionFormatter(action)}}\
+    {{/each}}',
+
+  actionTemplate: '<a href="#" class="action-link" data-action-id="${action.id}">${action.label}</a>',
+
+  layoutActions: function(columnModel, row) {
+    var span = $('<span></span>');
+    $(this.wrap(this.actionsTemplate)).tmpl({columnModel: columnModel, row: row, actionFormatter: this.proxy(this.actionFormatter)}).appendTo(span);
+    return span.html();
+  },
+
+  actionFormatter: function(action) {    
+    var span = $('<span></span>');
+    $(this.wrap(this.actionTemplate)).tmpl({action: action}).appendTo(span);
+    return span.html();
+  },
 
   init: function() {
     
@@ -270,15 +303,25 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
     if (command.data) {
       this.updateRows(command);
     }
+
+    this.target.on('click', '.action-link', this.proxy(function(e) {
+      e.preventDefault();
+      var clicked = $(e.currentTarget);
+      this.trigger('action-requested', { action: clicked.attr('data-action-id'),
+					 row: (this.currentDataSet[clicked.closest('tr').index() - 1]) });
+      return false;
+    }));
   },
   
   updateRows: function(command) {
+    this.currentDataSet = command.data;
+    
     if (command.data.length == 0) {
       $(this.wrap(this.noContentRow)).tmpl().appendTo(this.target.find('table tbody'));
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
-      $(this.wrap(this.rowTemplate)).tmpl(command).appendTo(this.target.find('table tbody'));
+      $(this.wrap(this.rowTemplate)).tmpl($.extend({ layoutActions: this.proxy(this.layoutActions)}, command)).appendTo(this.target.find('table tbody'));
     }
   },
 
@@ -287,6 +330,8 @@ PJ.JQueryTemplateView = PJ.TableView.sub({
   }
 
 });
+
+PJ.JQueryTemplateView.include(PJ.Events);
 
 /**
  * Table main class
@@ -345,7 +390,8 @@ PJ.BootstrapTable = PJ.Table.sub({
 
   init: function() {    
     this.view = new PJ.BootstrapTableTemplateView({
-      target: this.tableElement
+      target: this.tableElement,
+      actionData: !this.actionData ? {} : this.actionData
     });
 
     this.paginationStrategy = new PJ.PaginationBar({
@@ -361,7 +407,21 @@ PJ.BootstrapTable = PJ.Table.sub({
 
 PJ.BootstrapTableTemplateView = PJ.JQueryTemplateView.sub({
 
-  tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>'
+  tableTemplate: '<table class="table table-condensed table-striped" cellpadding="0" cellspacing="0" width="100%"><tr class="header-row"> </tr> </table>',
+
+  actionsTemplate: '<div class="actions"><ul style="list-style-type: none;">{{each(idx,action) columnModel.actions}}\
+    {{html actionFormatter(action)}}\
+  {{/each}}</ul></div>',
+
+  actionData: {},
+
+  actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
+
+  actionFormatter: function(action) {
+    var span = $('<span></span>');
+    $(this.wrap(this.actionTemplate)).tmpl({action: action, actionData: this.actionData}).appendTo(span);
+    return span.html();    
+  }
 
 });
 
