@@ -146,7 +146,7 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
   render: function(paginationSpec) {
     this.target.html('');
 
-    if (paginationSpec.pages > 0) {
+    if (paginationSpec.pages > 1) {
       $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
     }
 
@@ -180,8 +180,12 @@ TB.PaginationStrategy = new TB.Class({
   view: new TB.NoPaginationView(),
  
   initialize: function(dataSource) {    
+    console.log(dataSource.size());
     this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
     if (this.currentPage > this.maxPage) this.currentPage = this.maxPage;
+    if (this.currentPage == 0) this.currentPage = 1;
+    console.log(this.currentPage);
+    console.log('----');
     this.view.render({
       pageSize: this.pageSize,
       dataSetSize: dataSource.size(),
