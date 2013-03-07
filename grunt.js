@@ -22,6 +22,7 @@ module.exports = function(grunt) {
 
 	      'src/datasource/datasource.js',
 	      'src/datasource/array-datasource.js',
+	      'src/datasource/ajax-datasource.js',
 
 	      'src/pagination/view/pagination-view.js',
 	      'src/pagination/view/no-pagination-view.js',

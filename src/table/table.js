@@ -16,13 +16,18 @@ TB.Table = new TB.Class({
   },
   
   initialize: function() {
-    this.initializeDataSource();
-    this.initializeView();
-    this.initializePagination();
+    this.initializeDataSource(this.proxy(function() {
+      console.log('DataSource done');
+      this.initializeView();
+      console.log('View done');
+      this.initializePagination();
+      console.log('Pagination done');
 
-    this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
-    this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
-    this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
+      this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+      this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
+      this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
+      this.dataSource.bind('loading-initiated', this.proxy(this.showLoadingStatus));
+    }));
   },
 
   refreshTable: function() {
@@ -46,11 +51,11 @@ TB.Table = new TB.Class({
     this.refreshTable();
   },
 
-  initializeDataSource: function() {
+  initializeDataSource: function(callback) {
     if (!this.dataSource) {
       this.dataSource = new TB.ArrayDataSource([]);
     }
-    this.dataSource.initialize();
+    this.dataSource.initialize(callback);
   },
 
   initializePagination: function() {

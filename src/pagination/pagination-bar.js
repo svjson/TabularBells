@@ -20,6 +20,7 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
 
   getPageQuery: function() {
     return { from: (this.currentPage-1) * this.pageSize,
+	     page: this.currentPage,
 	     size: this.pageSize };
   }
 

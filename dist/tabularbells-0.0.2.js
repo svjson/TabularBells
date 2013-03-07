@@ -91,8 +91,8 @@ TB.DataSource = new TB.Class({
     return this.data.length;
   },
 
-  initialize: function() {
-    
+  initialize: function(callback) {
+    callback();
   }
   
 });
@@ -125,6 +125,61 @@ TB.ArrayDataSource = TB.DataSource.sub({
   
 });
 TB.DataSource.include(TB.Events);
+
+TB.AjaxDataSource = TB.DataSource.sub({
+
+  data: [],
+
+  baseUrl: null,
+
+  pageParameter: 'page',
+
+  pageSizeParameter: 'pageSize',
+
+  dataSetSize: null,
+
+  dataPath: 'data',
+  
+  sizePath: 'size',
+  
+  init: function() {    
+    
+  },
+
+  initialize: function(callback) {
+    this.size(this.proxy(function() {
+      callback();
+    }));
+  },
+
+  get: function(query, callback) {
+    this.trigger('loading-initiated');
+    $.getJSON(this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size, this.proxy(function(json) {
+      this.dataSetSize = this.getValueAtObjectPath(this.sizePath, json);
+      callback(this.getValueAtObjectPath(this.dataPath, json));
+    }));
+  },
+
+  getValueAtObjectPath: function(path, obj) {
+    var o = obj;
+    path.split('.').forEach(function(pathPart) {
+      o = o[pathPart];
+    });
+    return o;
+  },
+
+  size: function(callback) {
+    if (this.dataSetSize) {
+      callback(this.dataSetSize);
+    } else {
+      this.get({from: 1, page: 1, size: 1}, this.proxy(function() {
+	callback(this.dataSetSize);
+      }));
+    }
+  }
+
+});
+
 
 TB.PaginationView = new TB.Class({
 
@@ -215,7 +270,7 @@ TB.NoPagination = TB.PaginationStrategy.sub({
   maxResults: 50,
   
   getPageQuery: function() {
-    return {from: 0};
+    return {from: 0, page: 1};
   }
   
 });
@@ -242,6 +297,7 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
 
   getPageQuery: function() {
     return { from: (this.currentPage-1) * this.pageSize,
+	     page: this.currentPage,
 	     size: this.pageSize };
   }
 
@@ -441,13 +497,18 @@ TB.Table = new TB.Class({
   },
   
   initialize: function() {
-    this.initializeDataSource();
-    this.initializeView();
-    this.initializePagination();
+    this.initializeDataSource(this.proxy(function() {
+      console.log('DataSource done');
+      this.initializeView();
+      console.log('View done');
+      this.initializePagination();
+      console.log('Pagination done');
 
-    this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
-    this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
-    this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
+      this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
+      this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
+      this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
+      this.dataSource.bind('loading-initiated', this.proxy(this.showLoadingStatus));
+    }));
   },
 
   refreshTable: function() {
@@ -471,11 +532,11 @@ TB.Table = new TB.Class({
     this.refreshTable();
   },
 
-  initializeDataSource: function() {
+  initializeDataSource: function(callback) {
     if (!this.dataSource) {
       this.dataSource = new TB.ArrayDataSource([]);
     }
-    this.dataSource.initialize();
+    this.dataSource.initialize(callback);
   },
 
   initializePagination: function() {

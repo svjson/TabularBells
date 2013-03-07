@@ -9,8 +9,8 @@ TB.DataSource = new TB.Class({
     return this.data.length;
   },
 
-  initialize: function() {
-    
+  initialize: function(callback) {
+    callback();
   }
   
 });
