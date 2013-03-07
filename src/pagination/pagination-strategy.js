@@ -10,15 +10,17 @@ TB.PaginationStrategy = new TB.Class({
   view: new TB.NoPaginationView(),
  
   initialize: function(dataSource) {    
-    this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
-    if (this.currentPage > this.maxPage) this.currentPage = this.maxPage;
-    if (this.currentPage == 0) this.currentPage = 1;
-    this.view.render({
-      pageSize: this.pageSize,
-      dataSetSize: dataSource.size(),
-      pages: this.maxPage,
-      currentPage: this.currentPage
-    });
+    dataSource.size(this.proxy(function(dataSetSize) {
+      this.maxPage = Math.ceil(dataSetSize / this.pageSize);
+      if (this.currentPage > this.maxPage) this.currentPage = this.maxPage;
+      if (this.currentPage == 0) this.currentPage = 1;
+      this.view.render({
+	pageSize: this.pageSize,
+	dataSetSize: dataSetSize,
+	pages: this.maxPage,
+	currentPage: this.currentPage
+      });
+    }));
   }
 
 });

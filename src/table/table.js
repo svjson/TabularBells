@@ -26,10 +26,12 @@ TB.Table = new TB.Class({
   },
 
   refreshTable: function() {
-    this.view.updateRows({
-      data: this.dataSource.get(this.paginationStrategy.getPageQuery()),
-      columnModel: this.columnModel
-    });
+    this.dataSource.get(this.paginationStrategy.getPageQuery(), this.proxy(function(data) {
+       this.view.updateRows({
+         data: data,
+         columnModel: this.columnModel
+       });
+    }));
   },
 
   showLoadingStatus: function() {

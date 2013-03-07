@@ -4,10 +4,10 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.0.1',
+      version: '0.0.2',
       banner: '/*! TabularBells - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://www.github.com/svjson/tabularbells/\n' +
+        '* http://www.github.com/svjson/TabularBells/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
         'Sven Johansson; Licensed MIT */'
     },
