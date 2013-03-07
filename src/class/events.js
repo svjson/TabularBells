@@ -1,6 +1,6 @@
 TB.Events = function() {
   return {
-    listeners: {},
+    listeners: null,
 
     trigger: function(eventType, eventData) {
       this.getHandlers(eventType).forEach(function(fn) {
@@ -13,6 +13,7 @@ TB.Events = function() {
     },
     
     getHandlers: function(eventType) {
+      this.listeners = this.listeners || {};
       if (!this.listeners[eventType]) {
 	this.listeners[eventType] = [];
       }

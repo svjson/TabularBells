@@ -57,7 +57,7 @@ TB.Class = function(specObj) {
 
 TB.Events = function() {
   return {
-    listeners: {},
+    listeners: null,
 
     trigger: function(eventType, eventData) {
       this.getHandlers(eventType).forEach(function(fn) {
@@ -70,6 +70,7 @@ TB.Events = function() {
     },
     
     getHandlers: function(eventType) {
+      this.listeners = this.listeners || {};
       if (!this.listeners[eventType]) {
 	this.listeners[eventType] = [];
       }
@@ -151,16 +152,22 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
     }
 
     this.target.find('.pagination-page').on('click', this.proxy(function(e) {
+      e.preventDefault();
       var page = parseInt($(e.currentTarget).attr('data-page'));
       this.trigger('page-requested', {pageNumber: page});
+      return false;
     }));
 
     this.target.find('.pgn-prev').on('click', this.proxy(function(e) {
+      e.preventDefault();
       this.trigger('page-step', -1);
+      return false;
     }));
 
     this.target.find('.pgn-next').on('click', this.proxy(function(e) {
+      e.preventDefault();
       this.trigger('page-step', 1);
+      return false;
     }));
 
     this.selectPage(paginationSpec.currentPage);
