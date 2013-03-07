@@ -3,6 +3,8 @@ TB.BootstrapTable = TB.Table.sub({
   init: function() {    
     this.view = new TB.BootstrapTableTemplateView({
       target: this.tableElement,
+      noDataTemplate: !this.noDataTemplate ? 'No content' : this.noDataTemplate,
+      loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
 

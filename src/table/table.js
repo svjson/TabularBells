@@ -32,6 +32,10 @@ TB.Table = new TB.Class({
     });
   },
 
+  showLoadingStatus: function() {
+    this.view.showLoadingStatus();
+  },
+
   initializeView: function() {
     if (!this.view) {
       throw new Error("No view specified.");

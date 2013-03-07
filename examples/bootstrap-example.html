@@ -43,6 +43,7 @@
       
         var table = new TB.BootstrapTable({
           dataSource: new TB.ArrayDataSource(humanCompany),
+          noDataTemplate: '<i>No employees to show</i>',
           tableElement: $('#table-container'),
           pageSize: 5,
           columnModel: columnModel,

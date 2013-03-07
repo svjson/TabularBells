@@ -1,4 +1,4 @@
-/*! TabularBells - v0.0.1 - 2013-03-06
+/*! TabularBells - v0.0.1 - 2013-03-07
 * http://www.github.com/svjson/tabularbells/
 * Copyright (c) 2013 Sven Johansson; Licensed MIT */
 
@@ -180,12 +180,9 @@ TB.PaginationStrategy = new TB.Class({
   view: new TB.NoPaginationView(),
  
   initialize: function(dataSource) {    
-    console.log(dataSource.size());
     this.maxPage = Math.ceil(dataSource.size() / this.pageSize);
     if (this.currentPage > this.maxPage) this.currentPage = this.maxPage;
     if (this.currentPage == 0) this.currentPage = 1;
-    console.log(this.currentPage);
-    console.log('----');
     this.view.render({
       pageSize: this.pageSize,
       dataSetSize: dataSource.size(),
@@ -267,6 +264,10 @@ TB.TableView = new TB.Class({
   },
   
   render: function(command) {
+    
+  },
+
+  showLoadingStatus: function() {
 
   },
 
@@ -282,7 +283,10 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
   tableTemplate: '<table><tr class="header-row"></tr></table>',
 
-  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">No content</td></tr>',
+  noDataTemplate: 'No content',
+  loadingTemplate: 'Loading...',
+
+  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
 
   headerTemplate: '<th>${header}</th>',
 
@@ -324,6 +328,9 @@ TB.JQueryTemplateView = TB.TableView.sub({
   },
 
   render: function(command) {
+    
+    this.numberOfColumns = command.columnModel.visibleColumns();
+
     $(this.wrap(this.tableTemplate)).tmpl().appendTo(this.target);
     command.columnModel.columns.forEach(this.proxy(function(column) {
       if (!column.hidden) {
@@ -350,14 +357,27 @@ TB.JQueryTemplateView = TB.TableView.sub({
     this.currentDataSet = command.data;
     
     if (command.data.length == 0) {
-      this.target.find('.no-content-row').remove();
-      this.target.find('.data-row').remove();
-      $(this.wrap(this.noContentRow)).tmpl({noofColumns: command.columnModel.visibleColumns()}).appendTo(this.target.find('table tbody'));
+      this.showNoContentStatus();
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
       $(this.wrap(this.rowTemplate)).tmpl($.extend({ layoutActions: this.proxy(this.layoutActions)}, command)).appendTo(this.target.find('table tbody'));
     }
+  },
+  
+  showNoContentStatus: function() {
+    this.showEmptyStatus(this.noDataTemplate);
+  },
+
+  showLoadingStatus: function() {
+    this.showEmptyStatus(this.loadingTemplate);
+  },
+
+  showEmptyStatus: function(rowTemplate) {
+      this.target.find('.no-content-row').remove();
+      this.target.find('.data-row').remove();
+      $(this.wrap(this.noContentRow)).tmpl({noofColumns: this.numberOfColumns,
+					    noDataTemplate: rowTemplate}).appendTo(this.target.find('table tbody'));
   },
 
   wrap: function(html) {
@@ -402,6 +422,10 @@ TB.Table = new TB.Class({
     });
   },
 
+  showLoadingStatus: function() {
+    this.view.showLoadingStatus();
+  },
+
   initializeView: function() {
     if (!this.view) {
       throw new Error("No view specified.");
@@ -428,6 +452,8 @@ TB.BootstrapTable = TB.Table.sub({
   init: function() {    
     this.view = new TB.BootstrapTableTemplateView({
       target: this.tableElement,
+      noDataTemplate: !this.noDataTemplate ? 'No content' : this.noDataTemplate,
+      loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
 

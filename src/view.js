@@ -13,6 +13,10 @@ TB.TableView = new TB.Class({
   },
   
   render: function(command) {
+    
+  },
+
+  showLoadingStatus: function() {
 
   },
 
