@@ -17,11 +17,8 @@ TB.Table = new TB.Class({
   
   initialize: function() {
     this.initializeDataSource(this.proxy(function() {
-      console.log('DataSource done');
       this.initializeView();
-      console.log('View done');
       this.initializePagination();
-      console.log('Pagination done');
 
       this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
       this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
