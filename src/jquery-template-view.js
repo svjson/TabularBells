@@ -15,7 +15,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
     <tr class="data-row">\
       {{each(idx,col) columnModel.columns}}\
         {{if !col.hidden}}\
-          <td>${row[col.index]}</td>\
+          <td>{{html columnModel.renderCell(row, idx)}}</td>\
         {{/if}}\
       {{/each}}\
       {{if columnModel.showActions()}}\

@@ -33,7 +33,7 @@
             { index: 'id', header: 'Should be hidden', hidden: true },
             { index: 'name', header: 'Name' },
             { index: 'employeeNo', header: 'Employee #' },
-            { index: 'department', header: 'Department' }
+            { index: 'department', header: 'Department', renderFn: function(val) { return val.toUpperCase(); } }
           ],
           actions: [
             { id: 'view', label: 'View'}, 

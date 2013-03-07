@@ -234,6 +234,14 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
 
 TB.BasicColumnModel = new TB.Class({
 
+  renderCell: function(row, columnIndex) {
+    var col = this.columns[columnIndex];
+    if (col.renderFn) {
+      return col.renderFn(row[col.index], row);
+    }
+    return row[col.index];
+  },
+
   showActions: function() {
     return this.actions != null && this.actions.length > 0;
   },
@@ -294,7 +302,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
     <tr class="data-row">\
       {{each(idx,col) columnModel.columns}}\
         {{if !col.hidden}}\
-          <td>${row[col.index]}</td>\
+          <td>{{html columnModel.renderCell(row, idx)}}</td>\
         {{/if}}\
       {{/each}}\
       {{if columnModel.showActions()}}\
