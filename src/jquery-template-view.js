@@ -68,8 +68,12 @@ TB.JQueryTemplateView = TB.TableView.sub({
     this.target.on('click', '.action-link', this.proxy(function(e) {
       e.preventDefault();
       var clicked = $(e.currentTarget);
-      this.trigger('action-requested', { action: clicked.attr('data-action-id'),
-					 row: (this.currentDataSet[clicked.closest('tr').index() - 1]) });
+
+      var actionId = clicked.attr('data-action-id');
+      var rowIndex = clicked.closest('tr').index() - 1;
+
+      this.invokeAction(actionId, rowIndex);
+
       return false;
     }));
   },
@@ -107,4 +111,3 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
 });
 
-TB.JQueryTemplateView.include(TB.Events);

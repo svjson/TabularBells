@@ -1,5 +1,7 @@
 
 TB.TableView = new TB.Class({
+
+  currentDataSet: [],
   
   init: function() {
 
@@ -20,8 +22,15 @@ TB.TableView = new TB.Class({
 
   },
 
-  updateRows: function(data) {
+  updateRows: function(command) {
+    this.currentDataSet = command.data;;
+  },
 
+  invokeAction: function(actionId, rowIndex) {
+    this.trigger('action-requested', { action: actionId,
+				       row: this.currentDataSet[rowIndex] });
   }
 
 });
+
+TB.TableView.include(TB.Events);

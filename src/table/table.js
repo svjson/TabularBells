@@ -53,6 +53,15 @@ TB.Table = new TB.Class({
 
   initializePagination: function() {
     this.paginationStrategy.initialize(this.dataSource);
+  },
+
+  bindAction: function(actionId, handler) {
+    this.view.bind('action-requested', this.proxy(function(eventData) {
+      if (eventData.action === actionId) {
+	handler(eventData.row);
+      }
+    }));
   }
 
 });
+TB.Table.include(TB.Events);

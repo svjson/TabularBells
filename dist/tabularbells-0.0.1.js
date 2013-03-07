@@ -266,6 +266,8 @@ TB.BasicColumnModel = new TB.Class({
 
 
 TB.TableView = new TB.Class({
+
+  currentDataSet: [],
   
   init: function() {
 
@@ -286,11 +288,18 @@ TB.TableView = new TB.Class({
 
   },
 
-  updateRows: function(data) {
+  updateRows: function(command) {
+    this.currentDataSet = command.data;;
+  },
 
+  invokeAction: function(actionId, rowIndex) {
+    this.trigger('action-requested', { action: actionId,
+				       row: this.currentDataSet[rowIndex] });
   }
 
 });
+
+TB.TableView.include(TB.Events);
 
 TB.JQueryTemplateView = TB.TableView.sub({
   
@@ -362,8 +371,12 @@ TB.JQueryTemplateView = TB.TableView.sub({
     this.target.on('click', '.action-link', this.proxy(function(e) {
       e.preventDefault();
       var clicked = $(e.currentTarget);
-      this.trigger('action-requested', { action: clicked.attr('data-action-id'),
-					 row: (this.currentDataSet[clicked.closest('tr').index() - 1]) });
+
+      var actionId = clicked.attr('data-action-id');
+      var rowIndex = clicked.closest('tr').index() - 1;
+
+      this.invokeAction(actionId, rowIndex);
+
       return false;
     }));
   },
@@ -401,7 +414,6 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
 });
 
-TB.JQueryTemplateView.include(TB.Events);
 
 /**
  * Table main class
@@ -458,9 +470,18 @@ TB.Table = new TB.Class({
 
   initializePagination: function() {
     this.paginationStrategy.initialize(this.dataSource);
+  },
+
+  bindAction: function(actionId, handler) {
+    this.view.bind('action-requested', this.proxy(function(eventData) {
+      if (eventData.action === actionId) {
+	handler(eventData.row);
+      }
+    }));
   }
 
 });
+TB.Table.include(TB.Events);
 
 TB.BootstrapTable = TB.Table.sub({
 

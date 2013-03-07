@@ -54,6 +54,14 @@
           }
         });
 
+        table.bindAction('view', function(row) {
+          alert('Open employee ' + row.employeeNo);
+        });
+
+        table.bindAction('delete', function(row) {
+           alert('Remove employee ' + row.employeeNo);
+        });
+
         $('.human-company').click(function() {
           table.dataSource.loadData(humanCompany);
         });
