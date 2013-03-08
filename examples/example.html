@@ -8,7 +8,7 @@
 
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"> </script>
-    <script type="text/javascript" src="../dist/tabularbells-0.0.2.js"> </script>
+    <script type="text/javascript" src="../dist/tabularbells-0.0.3.js"> </script>
 
     <script type="text/javascript">
 
@@ -34,7 +34,7 @@
 
         var columnModel = new TB.BasicColumnModel({
           columns: [
-            { index: 'name', header: 'Name' },
+            { index: 'name', header: 'Name', columnFilter: true },
             { index: 'employeeNo', header: 'Employee #' },
             { index: 'department', header: 'Department' }
           ],

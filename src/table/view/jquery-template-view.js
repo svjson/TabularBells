@@ -7,9 +7,11 @@ TB.JQueryTemplateView = TB.TableView.sub({
   noDataTemplate: 'No content',
   loadingTemplate: 'Loading...',
 
-  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
+  headerTemplate: '<th data-index="${index}">{{html header}}</th>',
 
-  headerTemplate: '<th>${header}</th>',
+  filterTemplate: '<small> (<a href="#" class="filter-trigger">filter</a>)</small>',
+
+  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
 
   rowTemplate: '{{each(i,row) data}}\
     <tr class="data-row">\
@@ -31,6 +33,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
     {{/each}}',
 
   actionTemplate: '<a href="#" class="action-link" data-action-id="${action.id}">${action.label}</a>',
+
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input class="column-filter-input" data-column-index="${index}" type="text" /></div></div>',
 
   layoutActions: function(columnModel, row) {
     var span = $('<span></span>');
@@ -55,7 +59,11 @@ TB.JQueryTemplateView = TB.TableView.sub({
     $(this.wrap(this.tableTemplate)).tmpl().appendTo(this.target);
     command.columnModel.columns.forEach(this.proxy(function(column) {
       if (!column.hidden) {
-	$(this.wrap(this.headerTemplate)).tmpl(column).appendTo(this.target.find('.header-row'));
+	var header = column.header;
+	if (column.columnFilter) {
+	  header += this.filterTemplate;
+	}
+	$(this.wrap(this.headerTemplate)).tmpl({header: header, index: column.index}).appendTo(this.target.find('.header-row'));
       }
     }));
     if (command.columnModel.showActions()) {
@@ -76,6 +84,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
       return false;
     }));
+
+    this.bindColumnFilterPopovers(command);
   },
   
   updateRows: function(command) {
@@ -104,6 +114,17 @@ TB.JQueryTemplateView = TB.TableView.sub({
       $(this.wrap(this.noContentRow)).tmpl({noofColumns: this.numberOfColumns,
 					    noDataTemplate: rowTemplate}).appendTo(this.target.find('table tbody'));
   },
+
+  bindColumnFilterPopovers: function(command) {
+    alert('ColumnFilter is not implemented in this view implementation');
+  },
+
+/*  toggleColumnFilterPopup: function(index) {
+    var popup = $(this.wrap(this.columnFilterTemplate)).tmpl({});
+    this.target.find('th[data-index="' + index + '"]').find('a').popo
+    popup.find('a').popover({});
+  },
+*/
 
   wrap: function(html) {
     return '<script>' + html + '</script>';

@@ -27,6 +27,8 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
     {{html actionFormatter(action)}}\
   {{/each}}</ul></div>',
 
+  filterTemplate: '<a href="#" rel="popover" class="filter-trigger"><i class="icon-large icon-filter" /></a>',
+
   actionData: {},
 
   actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
@@ -35,6 +37,36 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
     var span = $('<span></span>');
     $(this.wrap(this.actionTemplate)).tmpl({action: action, actionData: this.actionData}).appendTo(span);
     return span.html();    
+  },
+
+  bindColumnFilterPopovers: function(command) {
+    
+    var triggers = this.target.find('th .filter-trigger');
+     
+    triggers.each(this.proxy(function(i,trigger) {
+      trigger = $(trigger);
+      trigger.popover({
+	title: 'Column filter',
+	placement: 'bottom',
+	content: $(this.columnFilterTemplate).tmpl({index: trigger.closest('th').attr('data-index')}),
+	html: true
+      }); 
+
+    }));
+    
+    this.target.on('keyup', '.column-filter-input', this.proxy(function(e) {
+      var target = $(e.currentTarget);
+      var index = target.attr('data-column-index');
+      var value = target.val();
+      this.trigger('column-filter-updated', {
+	index: index,
+	filter: value
+      });
+    }));
+    
+/*    this.target.on('click', '.filter-trigger', this.proxy(function(e) {
+      var index = $(e.currentTarget).closest('th').attr('data-index');
+    })); */
   }
 
 });

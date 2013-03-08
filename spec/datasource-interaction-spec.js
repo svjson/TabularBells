@@ -22,4 +22,5 @@ describe('DataSource Interaction', function() {
     expect( table.paginationStrategy.currentPage ).toEqual(1);
   });
 
+
 });

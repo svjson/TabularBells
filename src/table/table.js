@@ -24,6 +24,8 @@ TB.Table = new TB.Class({
       this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
       this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
       this.dataSource.bind('loading-initiated', this.proxy(this.showLoadingStatus));
+
+      this.view.bind('column-filter-updated', this.proxy(this.columnFilterUpdated));
     }));
   },
 
@@ -65,6 +67,11 @@ TB.Table = new TB.Class({
 	handler(eventData.row);
       }
     }));
+  },
+
+  columnFilterUpdated: function(event) {
+//    console.log('Column ' + event.index + ' now has filter ' + event.filter);
+    this.dataSource.applyFilter(event);
   }
 
 });

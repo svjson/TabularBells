@@ -34,8 +34,8 @@ module.exports = function(grunt) {
 	      
 	      'src/columnmodel/basic-column-model.js',
 
-	      'src/view.js',
-	      'src/jquery-template-view.js',
+	      'src/table/view/view.js',
+	      'src/table/view/jquery-template-view.js',
 
 	      'src/table/table.js',
 	      'src/table/bootstrap-table.js'],  // '<file_strip_banner:lib/FILE_NAME.js>'],

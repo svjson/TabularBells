@@ -6,7 +6,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">    
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="../dist/tabularbells-0.0.2.js"> </script>
+    <script type="text/javascript" src="../dist/tabularbells-0.0.3.js"> </script>
     <script type="text/javascript">
 
       var humanCompany = [
@@ -31,9 +31,9 @@
         var columnModel = new TB.BasicColumnModel({
           columns: [
             { index: 'id', header: 'Should be hidden', hidden: true },
-            { index: 'name', header: 'Name' },
+            { index: 'name', header: 'Name', columnFilter: 'true'},
             { index: 'employeeNo', header: 'Employee #' },
-            { index: 'department', header: 'Department', renderFn: function(val) { return val.toUpperCase(); } }
+            { index: 'department', header: 'Department', renderFn: function(val) { return val.toUpperCase(); }, columnFilter: true}
           ],
           actions: [
             { id: 'view', label: 'View'}, 
@@ -74,7 +74,12 @@
           table.dataSource.loadData([]); 
         });
 
+        $('#pop').popover();
+
+//        $('#pop').popover('show');
       });
+
+
     </script>
 
   </head>
@@ -92,5 +97,9 @@
       <a href="#" class="android-company">Android Company</a> |
       <a href="#" class="empty-data-set">Empty</a>
     </div>
+
+    
+    <a href="#" id="pop" class="btn btn-success" rel="popover" data-content="It's so simple to create a tooltop for my website!" data-original-title="Twitter Bootstrap Popover">hover for popover</a>  
+
   </body>
 </html>
