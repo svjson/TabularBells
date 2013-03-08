@@ -59,7 +59,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
       }
     }));
     if (command.columnModel.showActions()) {
-      $(this.wrap(this.headerTemplate)).tmpl({header: 'Actions'}).appendTo(this.target.find('.header-row'));
+      $(this.wrap(this.headerTemplate)).tmpl({header: command.columnModel.actionsHeader}).appendTo(this.target.find('.header-row'));
     }
     if (command.data) {
       this.updateRows(command);

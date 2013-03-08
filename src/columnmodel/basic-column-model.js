@@ -1,5 +1,7 @@
 TB.BasicColumnModel = new TB.Class({
 
+  actionsHeader: 'Actions',
+
   renderCell: function(row, columnIndex) {
     var col = this.columns[columnIndex];
     if (col.renderFn) {

@@ -305,6 +305,8 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
 
 TB.BasicColumnModel = new TB.Class({
 
+  actionsHeader: 'Actions',
+
   renderCell: function(row, columnIndex) {
     var col = this.columns[columnIndex];
     if (col.renderFn) {
@@ -426,7 +428,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
       }
     }));
     if (command.columnModel.showActions()) {
-      $(this.wrap(this.headerTemplate)).tmpl({header: 'Actions'}).appendTo(this.target.find('.header-row'));
+      $(this.wrap(this.headerTemplate)).tmpl({header: command.columnModel.actionsHeader}).appendTo(this.target.find('.header-row'));
     }
     if (command.data) {
       this.updateRows(command);
@@ -498,11 +500,8 @@ TB.Table = new TB.Class({
   
   initialize: function() {
     this.initializeDataSource(this.proxy(function() {
-      console.log('DataSource done');
       this.initializeView();
-      console.log('View done');
       this.initializePagination();
-      console.log('Pagination done');
 
       this.paginationStrategy.bind('pagination-changed', this.proxy(this.refreshTable));
       this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
