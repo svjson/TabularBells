@@ -33,6 +33,9 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 
   actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
 
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-column-index="${index}" type="text" /></div></div>',
+
+
   actionFormatter: function(action) {
     var span = $('<span></span>');
     $(this.wrap(this.actionTemplate)).tmpl({action: action, actionData: this.actionData}).appendTo(span);

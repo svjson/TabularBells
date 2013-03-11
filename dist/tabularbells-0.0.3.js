@@ -1,4 +1,4 @@
-/*! TabularBells - v0.0.3 - 2013-03-08
+/*! TabularBells - v0.0.3 - 2013-03-11
 * http://www.github.com/svjson/TabularBells/
 * Copyright (c) 2013 Sven Johansson; Licensed MIT */
 
@@ -160,6 +160,18 @@ TB.ArrayDataSource = TB.DataSource.sub({
     }
   },
 
+  size: function(callback) {
+    var data = this.data;
+    if (this.isFilterActive()) {
+      data = this.getFilteredData();
+    }
+
+    if (callback) {
+      callback(data.length);
+    }
+    return data.length;
+  },
+
   get: function(query, callback) {
     var data = this.data;
     if (this.isFilterActive()) {
@@ -213,7 +225,13 @@ TB.AjaxDataSource = TB.DataSource.sub({
 
   get: function(query, callback) {
     this.trigger('loading-initiated');
-    $.getJSON(this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size, this.proxy(function(json) {
+    
+    var requestURI = this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size;
+    if (this.isFilterActive()) {
+      requestURI += '&filter=' + JSON.stringify(this.filter);
+    }
+
+    $.getJSON(requestURI, this.proxy(function(json) {
       this.dataSetSize = this.getValueAtObjectPath(this.sizePath, json);
       callback(this.getValueAtObjectPath(this.dataPath, json));
     }));
@@ -674,6 +692,9 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
   actionData: {},
 
   actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
+
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-column-index="${index}" type="text" /></div></div>',
+
 
   actionFormatter: function(action) {
     var span = $('<span></span>');

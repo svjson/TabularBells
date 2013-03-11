@@ -26,7 +26,13 @@ TB.AjaxDataSource = TB.DataSource.sub({
 
   get: function(query, callback) {
     this.trigger('loading-initiated');
-    $.getJSON(this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size, this.proxy(function(json) {
+    
+    var requestURI = this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size;
+    if (this.isFilterActive()) {
+      requestURI += '&filter=' + JSON.stringify(this.filter);
+    }
+
+    $.getJSON(requestURI, this.proxy(function(json) {
       this.dataSetSize = this.getValueAtObjectPath(this.sizePath, json);
       callback(this.getValueAtObjectPath(this.dataPath, json));
     }));

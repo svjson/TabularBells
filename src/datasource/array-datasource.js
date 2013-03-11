@@ -6,6 +6,18 @@ TB.ArrayDataSource = TB.DataSource.sub({
     }
   },
 
+  size: function(callback) {
+    var data = this.data;
+    if (this.isFilterActive()) {
+      data = this.getFilteredData();
+    }
+
+    if (callback) {
+      callback(data.length);
+    }
+    return data.length;
+  },
+
   get: function(query, callback) {
     var data = this.data;
     if (this.isFilterActive()) {

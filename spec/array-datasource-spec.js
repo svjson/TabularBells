@@ -25,5 +25,34 @@ describe("ArrayDataSource", function() {
     expect( dataSource.get({from: 5, size: 5}) ).toEqual([6, 7]);
   });
 
+  it('should return subset when filter is active', function() {
+    var dataSource = new TB.ArrayDataSource([
+      {name: 'Anders'},
+      {name: 'Benny'},
+      {name: 'Berit'},
+      {name: 'Clyde'},
+      {name: 'Dennis'}
+    ]);
+
+    expect( dataSource.get({from: 0, size: 5}) ).toEqual([
+      {name: 'Anders'},
+      {name: 'Benny'},
+      {name: 'Berit'},
+      {name: 'Clyde'},
+      {name: 'Dennis'}
+    ]);
+
+    dataSource.applyFilter({
+      index: 'name',
+      filter: 'Be'
+    });
+
+    expect( dataSource.get({from: 0, size: 5}) ).toEqual([
+      {name: 'Benny'},
+      {name: 'Berit'}
+    ]);
+    
+  });
+
 });
 
