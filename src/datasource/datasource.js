@@ -54,7 +54,7 @@ TB.DataSource = new TB.Class({
 
       var filterL = filter.toLowerCase();
       var valueL = row[field].toLowerCase();
-      if (valueL.indexOf(filterL) != 0) return false;
+      if (valueL.indexOf(filterL) == -1) return false;
     }
     return true;
   },

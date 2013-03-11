@@ -119,13 +119,6 @@ TB.JQueryTemplateView = TB.TableView.sub({
     alert('ColumnFilter is not implemented in this view implementation');
   },
 
-/*  toggleColumnFilterPopup: function(index) {
-    var popup = $(this.wrap(this.columnFilterTemplate)).tmpl({});
-    this.target.find('th[data-index="' + index + '"]').find('a').popo
-    popup.find('a').popover({});
-  },
-*/
-
   wrap: function(html) {
     return '<script>' + html + '</script>';
   }

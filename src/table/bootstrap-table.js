@@ -33,7 +33,7 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 
   actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
 
-  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-column-index="${index}" type="text" /></div></div>',
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-table-id="${tableId}" data-column-index="${index}" type="text" /></div></div>',
 
 
   actionFormatter: function(action) {
@@ -51,13 +51,13 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
       trigger.popover({
 	title: 'Column filter',
 	placement: 'bottom',
-	content: $(this.columnFilterTemplate).tmpl({index: trigger.closest('th').attr('data-index')}),
+	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: trigger.closest('th').attr('data-index')}),
 	html: true
       }); 
 
     }));
     
-    this.target.on('keyup', '.column-filter-input', this.proxy(function(e) {
+    $(document).on('keyup', '.column-filter-input[data-table-id="' + this.target.attr('id') + '"]', this.proxy(function(e) {
       var target = $(e.currentTarget);
       var index = target.attr('data-column-index');
       var value = target.val();
@@ -66,10 +66,6 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 	filter: value
       });
     }));
-    
-/*    this.target.on('click', '.filter-trigger', this.proxy(function(e) {
-      var index = $(e.currentTarget).closest('th').attr('data-index');
-    })); */
   }
 
 });
