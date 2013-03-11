@@ -707,6 +707,10 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: trigger.closest('th').attr('data-index')}),
 	html: true
       }); 
+      trigger.click(function(e) {
+	e.preventDefault();
+	return false;
+      });
 
     }));
     
