@@ -5,6 +5,7 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
   target: null,
 
   render: function(paginationSpec) {
+    if (!this.target) return;
     this.target.html('');
 
     if (paginationSpec.pages > 1) {

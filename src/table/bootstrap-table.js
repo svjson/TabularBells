@@ -8,6 +8,13 @@ TB.BootstrapTable = TB.Table.sub({
       actionData: !this.actionData ? {} : this.actionData
     });
 
+    if (this.resultElement) {
+      this.resultView = new TB.JQueryTemplateResultView({
+	target: this.resultElement,
+	textTemplate: this.resultTextTemplate || TB.ResultView.fn.textTemplate
+      });
+    }
+
     this.paginationStrategy = new TB.PaginationBar({
       view: new TB.BootstrapPaginationTemplateView({
          target: this.paginationElement

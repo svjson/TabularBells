@@ -31,6 +31,9 @@ module.exports = function(grunt) {
 	      'src/pagination/pagination-strategy.js',
 	      'src/pagination/no-pagination.js',
 	      'src/pagination/pagination-bar.js',
+
+	      'src/result/result-view.js',
+	      'src/result/jquery-template-result-view.js',
 	      
 	      'src/columnmodel/basic-column-model.js',
 

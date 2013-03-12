@@ -51,6 +51,7 @@ TB.AjaxDataSource = TB.DataSource.sub({
       callback(this.dataSetSize);
     } else {
       this.get({from: 1, page: 1, size: 1}, this.proxy(function() {
+	this.cachedSize = this.dataSetSize;
 	callback(this.dataSetSize);
       }));
     }

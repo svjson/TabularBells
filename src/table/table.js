@@ -11,6 +11,8 @@ TB.Table = new TB.Class({
 
   paginationStrategy: new TB.NoPagination(),
 
+  resultView: new TB.ResultView(),
+
   init: function() {
     this.initialize();
   },
@@ -30,11 +32,13 @@ TB.Table = new TB.Class({
   },
 
   refreshTable: function() {
-    this.dataSource.get(this.paginationStrategy.getPageQuery(), this.proxy(function(data) {
-       this.view.updateRows({
-         data: data,
-         columnModel: this.columnModel
-       });
+    var pageQuery = this.paginationStrategy.getPageQuery();
+    this.dataSource.get(pageQuery, this.proxy(function(data) {
+      this.view.updateRows({
+        data: data,
+        columnModel: this.columnModel
+      });      
+      this.resultView.update(pageQuery, data, this.dataSource.cachedSize);
     }));
   },
 

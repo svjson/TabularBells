@@ -157,6 +157,7 @@ TB.ArrayDataSource = TB.DataSource.sub({
   init: function(data) {
     if (data) {
       this.data = data;
+      this.cachedSize = data.length;
     }
   },
 
@@ -189,8 +190,16 @@ TB.ArrayDataSource = TB.DataSource.sub({
     return data.slice(startAt, endAt);
   },
  
-  loadData: function(data) {
+  loadData: function(data, meta) {
     this.data = data;
+    this.cachedSize = data.length;
+
+    if (meta) {
+      if (meta.total) {
+	this.cachedSize = meta.total;
+      }
+    } 
+
     this.trigger('data-changed', data);
   }
   
@@ -250,6 +259,7 @@ TB.AjaxDataSource = TB.DataSource.sub({
       callback(this.dataSetSize);
     } else {
       this.get({from: 1, page: 1, size: 1}, this.proxy(function() {
+	this.cachedSize = this.dataSetSize;
 	callback(this.dataSetSize);
       }));
     }
@@ -283,6 +293,7 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
   target: null,
 
   render: function(paginationSpec) {
+    if (!this.target) return;
     this.target.html('');
 
     if (paginationSpec.pages > 1) {
@@ -381,6 +392,71 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
     return { from: (this.currentPage-1) * this.pageSize,
 	     page: this.currentPage,
 	     size: this.pageSize };
+  }
+
+});
+
+TB.ResultView = new TB.Class({
+
+  textTemplate: 'Showing results ${first} - ${last} of ${total}',
+
+  update: function(pageQuery, data, total) {
+    var templateData = {
+      first: pageQuery.from + 1,
+      last: pageQuery.from + data.length,
+      total: total
+    };
+    var text = this.renderTemplate(templateData);
+    if (templateData.total == 0) {
+      text = '';
+    }
+
+    this.updateUI(text);
+  },
+
+  updateUI: function(text) {
+    
+  },
+
+  renderTemplate: function(data) {
+    var rendered = this.textTemplate;
+    
+    var placeholders = [];
+    
+    var next = '${';
+
+    var placeholder = {};
+    for (var i=0; i<this.textTemplate.length; i++) {
+      if (this.textTemplate.substring(i,i+next.length) == next) {
+	if (next == '${') {
+	  placeholder.start = i;
+	  next= '}';
+	} else if (next == '}') {
+	  placeholder.end = i;
+	  placeholder.name = this.textTemplate.substring(placeholder.start+2, i);
+	  placeholders.push(placeholder);
+	  placeholder = {};
+	  next = '${';
+	}
+      }
+    }
+
+    placeholders.forEach(function(ph) {
+      rendered = rendered.replace('${' + ph.name + '}', data[ph.name]);
+    });
+    return rendered;
+  }
+
+});
+
+TB.JQueryTemplateResultView = TB.ResultView.sub({
+
+  resultTemplate: '<div><div style="text-align: center">{{html text}}</div></div>',
+
+  updateUI: function(text) {
+    if (this.target) {
+      this.target.html($(this.resultTemplate).tmpl({text: text}));
+    }
   }
 
 });
@@ -607,6 +683,8 @@ TB.Table = new TB.Class({
 
   paginationStrategy: new TB.NoPagination(),
 
+  resultView: new TB.ResultView(),
+
   init: function() {
     this.initialize();
   },
@@ -626,11 +704,13 @@ TB.Table = new TB.Class({
   },
 
   refreshTable: function() {
-    this.dataSource.get(this.paginationStrategy.getPageQuery(), this.proxy(function(data) {
-       this.view.updateRows({
-         data: data,
-         columnModel: this.columnModel
-       });
+    var pageQuery = this.paginationStrategy.getPageQuery();
+    this.dataSource.get(pageQuery, this.proxy(function(data) {
+      this.view.updateRows({
+        data: data,
+        columnModel: this.columnModel
+      });      
+      this.resultView.update(pageQuery, data, this.dataSource.cachedSize);
     }));
   },
 
@@ -682,6 +762,13 @@ TB.BootstrapTable = TB.Table.sub({
       loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
+
+    if (this.resultElement) {
+      this.resultView = new TB.JQueryTemplateResultView({
+	target: this.resultElement,
+	textTemplate: this.resultTextTemplate || TB.ResultView.fn.textTemplate
+      });
+    }
 
     this.paginationStrategy = new TB.PaginationBar({
       view: new TB.BootstrapPaginationTemplateView({

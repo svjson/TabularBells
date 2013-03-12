@@ -3,6 +3,7 @@ TB.ArrayDataSource = TB.DataSource.sub({
   init: function(data) {
     if (data) {
       this.data = data;
+      this.cachedSize = data.length;
     }
   },
 
@@ -35,8 +36,16 @@ TB.ArrayDataSource = TB.DataSource.sub({
     return data.slice(startAt, endAt);
   },
  
-  loadData: function(data) {
+  loadData: function(data, meta) {
     this.data = data;
+    this.cachedSize = data.length;
+
+    if (meta) {
+      if (meta.total) {
+	this.cachedSize = meta.total;
+      }
+    } 
+
     this.trigger('data-changed', data);
   }
   
