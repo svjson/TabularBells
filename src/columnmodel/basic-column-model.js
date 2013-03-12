@@ -2,6 +2,17 @@ TB.BasicColumnModel = new TB.Class({
 
   actionsHeader: 'Actions',
 
+  init: function() {
+    this.columns.forEach(function(col) {
+      if (col.columnFilter === true) {
+	col.columnFilter = {
+	  direction: 'top',
+	  title: 'Column filter'
+	};
+      }
+    });
+  },
+
   renderCell: function(row, columnIndex) {
     var col = this.columns[columnIndex];
     if (col.renderFn) {
@@ -21,6 +32,12 @@ TB.BasicColumnModel = new TB.Class({
     });
     if (this.showActions()) cols++;
     return cols;
+  },
+
+  getColumnByIndex: function(index) {
+    for (idx in this.columns) {
+      if (this.columns[idx].index == index) return this.columns[idx];
+    }
   }
   
 });

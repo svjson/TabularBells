@@ -45,13 +45,17 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
   bindColumnFilterPopovers: function(command) {
     
     var triggers = this.target.find('th .filter-trigger');
-     
+
     triggers.each(this.proxy(function(i,trigger) {
       trigger = $(trigger);
+      
+      var dataIndex = trigger.closest('th').attr('data-index');
+      var filterConfig = command.columnModel.getColumnByIndex(dataIndex).columnFilter;
+
       trigger.popover({
-	title: 'Column filter',
-	placement: 'bottom',
-	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: trigger.closest('th').attr('data-index')}),
+	title: filterConfig.title,
+	placement: filterConfig.direction,
+	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: dataIndex}),
 	html: true
       }); 
       trigger.click(function(e) {

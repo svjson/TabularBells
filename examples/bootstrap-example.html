@@ -31,7 +31,7 @@
         var columnModel = new TB.BasicColumnModel({
           columns: [
             { index: 'id', header: 'Should be hidden', hidden: true },
-            { index: 'name', header: 'Name', columnFilter: 'true'},
+            { index: 'name', header: 'Name', columnFilter: {direction: 'bottom', title: 'Filter by name'}},
             { index: 'employeeNo', header: 'Employee #' },
             { index: 'department', header: 'Department', renderFn: function(val) { return val.toUpperCase(); }, columnFilter: true}
           ],

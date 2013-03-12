@@ -1,4 +1,4 @@
-/*! TabularBells - v0.0.3 - 2013-03-11
+/*! TabularBells - v0.0.3 - 2013-03-12
 * http://www.github.com/svjson/TabularBells/
 * Copyright (c) 2013 Sven Johansson; Licensed MIT */
 
@@ -384,6 +384,17 @@ TB.BasicColumnModel = new TB.Class({
 
   actionsHeader: 'Actions',
 
+  init: function() {
+    this.columns.forEach(function(col) {
+      if (col.columnFilter === true) {
+	col.columnFilter = {
+	  direction: 'top',
+	  title: 'Column filter'
+	};
+      }
+    });
+  },
+
   renderCell: function(row, columnIndex) {
     var col = this.columns[columnIndex];
     if (col.renderFn) {
@@ -403,6 +414,12 @@ TB.BasicColumnModel = new TB.Class({
     });
     if (this.showActions()) cols++;
     return cols;
+  },
+
+  getColumnByIndex: function(index) {
+    for (idx in this.columns) {
+      if (this.columns[idx].index == index) return this.columns[idx];
+    }
   }
   
 });
@@ -698,13 +715,17 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
   bindColumnFilterPopovers: function(command) {
     
     var triggers = this.target.find('th .filter-trigger');
-     
+
     triggers.each(this.proxy(function(i,trigger) {
       trigger = $(trigger);
+      
+      var dataIndex = trigger.closest('th').attr('data-index');
+      var filterConfig = command.columnModel.getColumnByIndex(dataIndex).columnFilter;
+
       trigger.popover({
-	title: 'Column filter',
-	placement: 'bottom',
-	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: trigger.closest('th').attr('data-index')}),
+	title: filterConfig.title,
+	placement: filterConfig.direction,
+	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: dataIndex}),
 	html: true
       }); 
       trigger.click(function(e) {
