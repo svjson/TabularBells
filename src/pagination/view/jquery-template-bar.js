@@ -8,7 +8,12 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
     this.target.html('');
 
     if (paginationSpec.pages > 1) {
-      $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
+      var pageArray = [];
+      for (var i=0; i < paginationSpec.pages; i++) {
+	pageArray.push(i);
+      }
+      var tmplObj = {pages: pageArray};
+      $(this.paginationBarTemplate).tmpl(tmplObj).appendTo(this.target);
     }
 
     this.target.find('.pagination-page').on('click', this.proxy(function(e) {
