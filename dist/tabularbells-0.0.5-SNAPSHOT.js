@@ -292,6 +292,8 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
 
   target: null,
 
+  pageArray: [], 
+
   render: function(paginationSpec) {
     if (!this.target) return;
     this.target.html('');
@@ -301,6 +303,7 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
       for (var i=0; i < paginationSpec.pages; i++) {
 	pageArray.push(i);
       }
+      this.pageArray = pageArray;
       var tmplObj = {pages: pageArray};
       $(this.paginationBarTemplate).tmpl(tmplObj).appendTo(this.target);
     }
@@ -321,6 +324,18 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
     this.target.find('.pgn-next').on('click', this.proxy(function(e) {
       e.preventDefault();
       this.trigger('page-step', 1);
+      return false;
+    }));
+
+    this.target.find('.pgn-first').on('click', this.proxy(function(e) {
+      e.preventDefault();
+      this.trigger('page-requested', {pageNumber: 1});
+      return false;
+    }));
+
+    this.target.find('.pgn-last').on('click', this.proxy(function(e) {
+      e.preventDefault();
+      this.trigger('page-requested', {pageNumber: this.pageArray.length});
       return false;
     }));
 
@@ -615,9 +630,9 @@ TB.JQueryTemplateView = TB.TableView.sub({
     }
     if (command.data) {
       this.updateRows(command);
-    }
+    } 
 
-    this.target.on('click', '.action-link', this.proxy(function(e) {
+    var actionHandlerFn = this.proxy(function(e) {
       e.preventDefault();
       var clicked = $(e.currentTarget);
 
@@ -627,20 +642,24 @@ TB.JQueryTemplateView = TB.TableView.sub({
       this.invokeAction(actionId, rowIndex);
 
       return false;
-    }));
+    });
+
+    this.target.find('.action-link').on('click', actionHandlerFn);
+
 
     this.bindColumnFilterPopovers(command);
   },
   
   updateRows: function(command) {
     this.currentDataSet = command.data;
-    
+
     if (command.data.length == 0) {
       this.showNoContentStatus();
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
-      $(this.wrap(this.rowTemplate)).tmpl($.extend({ layoutActions: this.proxy(this.layoutActions)}, command)).appendTo(this.target.find('table tbody'));
+      var templateData = $.extend({ layoutActions: this.proxy(this.layoutActions)}, command);
+      $(this.wrap(this.rowTemplate)).tmpl(templateData).appendTo(this.target.find('table tbody'));
     }
   },
   

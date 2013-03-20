@@ -4,6 +4,8 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
 
   target: null,
 
+  pageArray: [], 
+
   render: function(paginationSpec) {
     if (!this.target) return;
     this.target.html('');
@@ -13,6 +15,7 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
       for (var i=0; i < paginationSpec.pages; i++) {
 	pageArray.push(i);
       }
+      this.pageArray = pageArray;
       var tmplObj = {pages: pageArray};
       $(this.paginationBarTemplate).tmpl(tmplObj).appendTo(this.target);
     }
@@ -33,6 +36,18 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
     this.target.find('.pgn-next').on('click', this.proxy(function(e) {
       e.preventDefault();
       this.trigger('page-step', 1);
+      return false;
+    }));
+
+    this.target.find('.pgn-first').on('click', this.proxy(function(e) {
+      e.preventDefault();
+      this.trigger('page-requested', {pageNumber: 1});
+      return false;
+    }));
+
+    this.target.find('.pgn-last').on('click', this.proxy(function(e) {
+      e.preventDefault();
+      this.trigger('page-requested', {pageNumber: this.pageArray.length});
       return false;
     }));
 
