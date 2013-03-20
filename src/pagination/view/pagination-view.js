@@ -5,7 +5,7 @@ TB.PaginationView = new TB.Class({
   },
 
   selectPage: function(pageNumber) {
-
+    
   }
 
 });

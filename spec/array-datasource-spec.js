@@ -12,6 +12,13 @@ describe("ArrayDataSource", function() {
     expect( dataSource.get({from: 0, size: 7}) ).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
+  it('should return correct size and array data when data length exactly fills X number of pages', function() {
+    var dataSource = new TB.ArrayDataSource([1, 2, 3, 4, 5, 6, 7, 8]);
+    
+    expect( dataSource.size() ).toEqual(8);
+    expect( dataSource.get({from: 6, size: 2}) ).toEqual([7, 8]);
+  });
+
   it('should return correct all elements if size-argument is larger than data length', function() {
     var dataSource = new TB.ArrayDataSource([1, 2, 3, 4, 5, 6, 7]);
     

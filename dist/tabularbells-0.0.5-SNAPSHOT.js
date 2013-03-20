@@ -1,4 +1,4 @@
-/*! TabularBells - v0.0.2 - 2013-03-07
+/*! TabularBells - v0.0.5-SNAPSHOT - 2013-03-20
 * http://www.github.com/svjson/TabularBells/
 * Copyright (c) 2013 Sven Johansson; Licensed MIT */
 
@@ -84,6 +84,12 @@ TB.DataSource = new TB.Class({
 
   data: [],
 
+  filter: null,
+
+  init: function() {
+
+  },
+
   size: function(callback) {
     if (callback) {
       callback(this.data.length);
@@ -93,8 +99,56 @@ TB.DataSource = new TB.Class({
 
   initialize: function(callback) {
     callback();
-  }
+  },
   
+  applyFilter: function(filter) {
+    if (!this.filter) this.filter = {};
+    if (!filter.filter || filter.filter.length == 0) {
+      delete this.filter[filter.index];
+    } else {
+      this.filter[filter.index] = filter.filter;
+    }
+    this.filteredData = null;
+    this.trigger('data-changed', this.data);
+  },
+
+  getFilteredData: function() {
+    if (null == this.filteredData) {
+      this.filterData();
+    }
+    return this.filteredData;
+  },
+
+  filterData: function() {
+    var filtered = [];
+    this.data.forEach(this.proxy(function(row) {
+      if (this.matchesFilter(row)) filtered.push(row);
+    }));
+    this.filteredData = filtered;
+  },
+
+  matchesFilter: function(row) {
+    for (var filterIndex in this.filter) {
+      var field = filterIndex;
+      var filter = this.filter[filterIndex];
+
+      if (!row[field]) return false;
+
+      var filterL = filter.toLowerCase();
+      var valueL = row[field].toLowerCase();
+      if (valueL.indexOf(filterL) == -1) return false;
+    }
+    return true;
+  },
+
+  isFilterActive: function() {
+    if (!this.filter) return false;
+    for (var i in this.filter) { return true; }
+    return false;
+  }
+
+  
+
 });
 TB.DataSource.include(TB.Events);
 
@@ -103,23 +157,49 @@ TB.ArrayDataSource = TB.DataSource.sub({
   init: function(data) {
     if (data) {
       this.data = data;
+      this.cachedSize = data.length;
     }
   },
 
+  size: function(callback) {
+    var data = this.data;
+    if (this.isFilterActive()) {
+      data = this.getFilteredData();
+    }
+
+    if (callback) {
+      callback(data.length);
+    }
+    return data.length;
+  },
+
   get: function(query, callback) {
-    if (query.from > this.data.length) return [];
-    if (!query.size) return this.data;
+    var data = this.data;
+    if (this.isFilterActive()) {
+      data = this.getFilteredData();
+    }
+
+    if (query.from > data.length) return [];
+    if (!query.size) return data;
     var startAt = query.from;
     var endAt = query.from + query.size;
-    if (endAt > this.data.length) endAt = this.data.length;
+    if (endAt > data.length) endAt = data.length;
     if (callback) {
-      callback(this.data.slice(startAt, endAt));
+      callback(data.slice(startAt, endAt));
     }
-    return this.data.slice(startAt, endAt);
+    return data.slice(startAt, endAt);
   },
-  
-  loadData: function(data) {
+ 
+  loadData: function(data, meta) {
     this.data = data;
+    this.cachedSize = data.length;
+
+    if (meta) {
+      if (meta.total) {
+	this.cachedSize = meta.total;
+      }
+    } 
+
     this.trigger('data-changed', data);
   }
   
@@ -154,7 +234,13 @@ TB.AjaxDataSource = TB.DataSource.sub({
 
   get: function(query, callback) {
     this.trigger('loading-initiated');
-    $.getJSON(this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size, this.proxy(function(json) {
+    
+    var requestURI = this.baseUrl + '?page=' + (query.page) + '&pageSize=' + query.size;
+    if (this.isFilterActive()) {
+      requestURI += '&filter=' + JSON.stringify(this.filter);
+    }
+
+    $.getJSON(requestURI, this.proxy(function(json) {
       this.dataSetSize = this.getValueAtObjectPath(this.sizePath, json);
       callback(this.getValueAtObjectPath(this.dataPath, json));
     }));
@@ -173,6 +259,7 @@ TB.AjaxDataSource = TB.DataSource.sub({
       callback(this.dataSetSize);
     } else {
       this.get({from: 1, page: 1, size: 1}, this.proxy(function() {
+	this.cachedSize = this.dataSetSize;
 	callback(this.dataSetSize);
       }));
     }
@@ -188,7 +275,7 @@ TB.PaginationView = new TB.Class({
   },
 
   selectPage: function(pageNumber) {
-
+    
   }
 
 });
@@ -206,10 +293,16 @@ TB.JQueryTemplatePaginationView = TB.PaginationView.sub({
   target: null,
 
   render: function(paginationSpec) {
+    if (!this.target) return;
     this.target.html('');
 
     if (paginationSpec.pages > 1) {
-      $(this.paginationBarTemplate).tmpl({pages: new Array(paginationSpec.pages)}).appendTo(this.target);
+      var pageArray = [];
+      for (var i=0; i < paginationSpec.pages; i++) {
+	pageArray.push(i);
+      }
+      var tmplObj = {pages: pageArray};
+      $(this.paginationBarTemplate).tmpl(tmplObj).appendTo(this.target);
     }
 
     this.target.find('.pagination-page').on('click', this.proxy(function(e) {
@@ -303,9 +396,85 @@ TB.PaginationBar = TB.PaginationStrategy.sub({
 
 });
 
+TB.ResultView = new TB.Class({
+
+  textTemplate: 'Showing results ${first} - ${last} of ${total}',
+
+  update: function(pageQuery, data, total) {
+    var templateData = {
+      first: pageQuery.from + 1,
+      last: pageQuery.from + data.length,
+      total: total
+    };
+    var text = this.renderTemplate(templateData);
+    if (templateData.total == 0) {
+      text = '';
+    }
+
+    this.updateUI(text);
+  },
+
+  updateUI: function(text) {
+    
+  },
+
+  renderTemplate: function(data) {
+    var rendered = this.textTemplate;
+    
+    var placeholders = [];
+    
+    var next = '${';
+
+    var placeholder = {};
+    for (var i=0; i<this.textTemplate.length; i++) {
+      if (this.textTemplate.substring(i,i+next.length) == next) {
+	if (next == '${') {
+	  placeholder.start = i;
+	  next= '}';
+	} else if (next == '}') {
+	  placeholder.end = i;
+	  placeholder.name = this.textTemplate.substring(placeholder.start+2, i);
+	  placeholders.push(placeholder);
+	  placeholder = {};
+	  next = '${';
+	}
+      }
+    }
+
+    placeholders.forEach(function(ph) {
+      rendered = rendered.replace('${' + ph.name + '}', data[ph.name]);
+    });
+    return rendered;
+  }
+
+});
+
+TB.JQueryTemplateResultView = TB.ResultView.sub({
+
+  resultTemplate: '<div><div style="text-align: center">{{html text}}</div></div>',
+
+  updateUI: function(text) {
+    if (this.target) {
+      this.target.html($(this.resultTemplate).tmpl({text: text}));
+    }
+  }
+
+});
+
 TB.BasicColumnModel = new TB.Class({
 
   actionsHeader: 'Actions',
+
+  init: function() {
+    this.columns.forEach(function(col) {
+      if (col.columnFilter === true) {
+	col.columnFilter = {
+	  direction: 'top',
+	  title: 'Column filter'
+	};
+      }
+    });
+  },
 
   renderCell: function(row, columnIndex) {
     var col = this.columns[columnIndex];
@@ -326,6 +495,12 @@ TB.BasicColumnModel = new TB.Class({
     });
     if (this.showActions()) cols++;
     return cols;
+  },
+
+  getColumnByIndex: function(index) {
+    for (idx in this.columns) {
+      if (this.columns[idx].index == index) return this.columns[idx];
+    }
   }
   
 });
@@ -376,9 +551,11 @@ TB.JQueryTemplateView = TB.TableView.sub({
   noDataTemplate: 'No content',
   loadingTemplate: 'Loading...',
 
-  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
+  headerTemplate: '<th data-index="${index}">{{html header}}</th>',
 
-  headerTemplate: '<th>${header}</th>',
+  filterTemplate: '<small> (<a href="#" class="filter-trigger">filter</a>)</small>',
+
+  noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
 
   rowTemplate: '{{each(i,row) data}}\
     <tr class="data-row">\
@@ -400,6 +577,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
     {{/each}}',
 
   actionTemplate: '<a href="#" class="action-link" data-action-id="${action.id}">${action.label}</a>',
+
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input class="column-filter-input" data-column-index="${index}" type="text" /></div></div>',
 
   layoutActions: function(columnModel, row) {
     var span = $('<span></span>');
@@ -424,7 +603,11 @@ TB.JQueryTemplateView = TB.TableView.sub({
     $(this.wrap(this.tableTemplate)).tmpl().appendTo(this.target);
     command.columnModel.columns.forEach(this.proxy(function(column) {
       if (!column.hidden) {
-	$(this.wrap(this.headerTemplate)).tmpl(column).appendTo(this.target.find('.header-row'));
+	var header = column.header;
+	if (column.columnFilter) {
+	  header += this.filterTemplate;
+	}
+	$(this.wrap(this.headerTemplate)).tmpl({header: header, index: column.index}).appendTo(this.target.find('.header-row'));
       }
     }));
     if (command.columnModel.showActions()) {
@@ -445,6 +628,8 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
       return false;
     }));
+
+    this.bindColumnFilterPopovers(command);
   },
   
   updateRows: function(command) {
@@ -474,6 +659,10 @@ TB.JQueryTemplateView = TB.TableView.sub({
 					    noDataTemplate: rowTemplate}).appendTo(this.target.find('table tbody'));
   },
 
+  bindColumnFilterPopovers: function(command) {
+    alert('ColumnFilter is not implemented in this view implementation');
+  },
+
   wrap: function(html) {
     return '<script>' + html + '</script>';
   }
@@ -494,6 +683,8 @@ TB.Table = new TB.Class({
 
   paginationStrategy: new TB.NoPagination(),
 
+  resultView: new TB.ResultView(),
+
   init: function() {
     this.initialize();
   },
@@ -507,15 +698,19 @@ TB.Table = new TB.Class({
       this.dataSource.bind('data-changed', this.proxy(this.initializePagination));
       this.dataSource.bind('data-changed', this.proxy(this.refreshTable));
       this.dataSource.bind('loading-initiated', this.proxy(this.showLoadingStatus));
+
+      this.view.bind('column-filter-updated', this.proxy(this.columnFilterUpdated));
     }));
   },
 
   refreshTable: function() {
-    this.dataSource.get(this.paginationStrategy.getPageQuery(), this.proxy(function(data) {
-       this.view.updateRows({
-         data: data,
-         columnModel: this.columnModel
-       });
+    var pageQuery = this.paginationStrategy.getPageQuery();
+    this.dataSource.get(pageQuery, this.proxy(function(data) {
+      this.view.updateRows({
+        data: data,
+        columnModel: this.columnModel
+      });      
+      this.resultView.update(pageQuery, data, this.dataSource.cachedSize);
     }));
   },
 
@@ -548,6 +743,11 @@ TB.Table = new TB.Class({
 	handler(eventData.row);
       }
     }));
+  },
+
+  columnFilterUpdated: function(event) {
+//    console.log('Column ' + event.index + ' now has filter ' + event.filter);
+    this.dataSource.applyFilter(event);
   }
 
 });
@@ -562,6 +762,13 @@ TB.BootstrapTable = TB.Table.sub({
       loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
+
+    if (this.resultElement) {
+      this.resultView = new TB.JQueryTemplateResultView({
+	target: this.resultElement,
+	textTemplate: this.resultTextTemplate || TB.ResultView.fn.textTemplate
+      });
+    }
 
     this.paginationStrategy = new TB.PaginationBar({
       view: new TB.BootstrapPaginationTemplateView({
@@ -582,14 +789,53 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
     {{html actionFormatter(action)}}\
   {{/each}}</ul></div>',
 
+  filterTemplate: '<a href="#" rel="popover" class="filter-trigger"><i class="icon-large icon-filter" /></a>',
+
   actionData: {},
 
   actionTemplate: '<li style="display: inline"><a href="#" class="action-link" data-action-id="${action.id}"><i class="${actionData[action.id]} icon-large" title="${action.label}"></i></a></li>',
+
+  columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-table-id="${tableId}" data-column-index="${index}" type="text" /></div></div>',
+
 
   actionFormatter: function(action) {
     var span = $('<span></span>');
     $(this.wrap(this.actionTemplate)).tmpl({action: action, actionData: this.actionData}).appendTo(span);
     return span.html();    
+  },
+
+  bindColumnFilterPopovers: function(command) {
+    
+    var triggers = this.target.find('th .filter-trigger');
+
+    triggers.each(this.proxy(function(i,trigger) {
+      trigger = $(trigger);
+      
+      var dataIndex = trigger.closest('th').attr('data-index');
+      var filterConfig = command.columnModel.getColumnByIndex(dataIndex).columnFilter;
+
+      trigger.popover({
+	title: filterConfig.title,
+	placement: filterConfig.direction,
+	content: $(this.columnFilterTemplate).tmpl({tableId: this.target.attr('id'), index: dataIndex}),
+	html: true
+      }); 
+      trigger.click(function(e) {
+	e.preventDefault();
+	return false;
+      });
+
+    }));
+    
+    $(document).on('keyup', '.column-filter-input[data-table-id="' + this.target.attr('id') + '"]', this.proxy(function(e) {
+      var target = $(e.currentTarget);
+      var index = target.attr('data-column-index');
+      var value = target.val();
+      this.trigger('column-filter-updated', {
+	index: index,
+	filter: value
+      });
+    }));
   }
 
 });

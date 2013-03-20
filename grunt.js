@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.0.4',
+      version: '0.0.5-SNAPSHOT',
       banner: '/*! TabularBells - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* http://www.github.com/svjson/TabularBells/\n' +
