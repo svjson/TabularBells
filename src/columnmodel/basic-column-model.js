@@ -18,7 +18,7 @@ TB.BasicColumnModel = new TB.Class({
     if (col.renderFn) {
       return col.renderFn(row[col.index], row);
     }
-    return row[col.index] ? row[col.index] : '';
+    return row[col.index] != null ? row[col.index] : '';
   },
 
   showActions: function() {
