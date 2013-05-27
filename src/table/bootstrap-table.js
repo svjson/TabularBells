@@ -7,6 +7,9 @@ TB.BootstrapTable = TB.Table.sub({
       loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
+    if (this.selectionMode) {
+      this.view.selectionMode = this.selectionMode;
+    }
 
     if (this.resultElement) {
       this.resultView = new TB.JQueryTemplateResultView({
@@ -42,6 +45,7 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 
   columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-table-id="${tableId}" data-column-index="${index}" type="text" /></div></div>',
 
+  selectedRowClass: 'success',
 
   actionFormatter: function(action) {
     var span = $('<span></span>');

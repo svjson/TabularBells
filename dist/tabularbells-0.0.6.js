@@ -1,4 +1,4 @@
-/*! TabularBells - v0.0.5-SNAPSHOT - 2013-03-20
+/*! TabularBells - v0.0.6 - 2013-05-27
 * http://www.github.com/svjson/TabularBells/
 * Copyright (c) 2013 Sven Johansson; Licensed MIT */
 
@@ -496,7 +496,7 @@ TB.BasicColumnModel = new TB.Class({
     if (col.renderFn) {
       return col.renderFn(row[col.index], row);
     }
-    return row[col.index];
+    return row[col.index] != null ? row[col.index] : '';
   },
 
   showActions: function() {
@@ -524,6 +524,10 @@ TB.BasicColumnModel = new TB.Class({
 TB.TableView = new TB.Class({
 
   currentDataSet: [],
+
+  selectionMode: 'none',
+
+  selectedRowClass: 'selected',
   
   init: function() {
 
@@ -541,16 +545,24 @@ TB.TableView = new TB.Class({
   },
 
   showLoadingStatus: function() {
-
+    
   },
 
   updateRows: function(command) {
     this.currentDataSet = command.data;;
   },
 
+  isSelectionEnabled: function() {
+    return this.selectionMode && this.selectionMode !== 'none';
+  },
+
   invokeAction: function(actionId, rowIndex) {
     this.trigger('action-requested', { action: actionId,
 				       row: this.currentDataSet[rowIndex] });
+  },
+
+  rowSelected: function(row, rowIndex) {
+    this.trigger('row-selected', { row: this.currentDataSet[rowIndex] });	
   }
 
 });
@@ -573,7 +585,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
   noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
 
   rowTemplate: '{{each(i,row) data}}\
-    <tr class="data-row">\
+    <tr class="data-row"{{if selection}} style="cursor: pointer"{{/if}}>\
       {{each(idx,col) columnModel.columns}}\
         {{if !col.hidden}}\
           <td>{{html columnModel.renderCell(row, idx)}}</td>\
@@ -643,9 +655,16 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
       return false;
     });
+    this.target.on('click', '.action-link', actionHandlerFn);
 
-    this.target.find('.action-link').on('click', actionHandlerFn);
-
+    if (this.isSelectionEnabled()) {
+      this.target.on('click', 'td', this.proxy(function(e) {
+	var row = $(e.currentTarget).closest('tr');
+	this.target.find('tr').removeClass(this.selectedRowClass);
+	row.addClass(this.selectedRowClass);
+	this.rowSelected(row, row.index()-1);
+      }));
+    }
 
     this.bindColumnFilterPopovers(command);
   },
@@ -658,7 +677,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
-      var templateData = $.extend({ layoutActions: this.proxy(this.layoutActions)}, command);
+      var templateData = $.extend({ layoutActions: this.proxy(this.layoutActions), selection: this.isSelectionEnabled()}, command);
       $(this.wrap(this.rowTemplate)).tmpl(templateData).appendTo(this.target.find('table tbody'));
     }
   },
@@ -742,6 +761,9 @@ TB.Table = new TB.Class({
       throw new Error("No view specified.");
     }
     this.view.initialize(this.columnModel);
+    if (this.selectionMode) {
+      this.view.selectionMode = this.selectionMode;
+    }
     this.refreshTable();
   },
 
@@ -764,8 +786,13 @@ TB.Table = new TB.Class({
     }));
   },
 
+  onSelectRow: function(handler) {
+    this.view.bind('row-selected', this.proxy(function(eventData) {
+      handler(eventData.row);
+    }));
+  },
+
   columnFilterUpdated: function(event) {
-//    console.log('Column ' + event.index + ' now has filter ' + event.filter);
     this.dataSource.applyFilter(event);
   }
 
@@ -781,6 +808,9 @@ TB.BootstrapTable = TB.Table.sub({
       loadingTemplate: !this.loadingTemplate ? 'Loading...' : this.loadingTemplate,
       actionData: !this.actionData ? {} : this.actionData
     });
+    if (this.selectionMode) {
+      this.view.selectionMode = this.selectionMode;
+    }
 
     if (this.resultElement) {
       this.resultView = new TB.JQueryTemplateResultView({
@@ -816,6 +846,7 @@ TB.BootstrapTableTemplateView = TB.JQueryTemplateView.sub({
 
   columnFilterTemplate: '<div id="column-popup-wrapper"><div id="column-popup"><input style="max-width: 195px" class="column-filter-input" data-table-id="${tableId}" data-column-index="${index}" type="text" /></div></div>',
 
+  selectedRowClass: 'success',
 
   actionFormatter: function(action) {
     var span = $('<span></span>');

@@ -6,7 +6,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">    
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="../dist/tabularbells-0.0.5.js"> </script>
+    <script type="text/javascript" src="../dist/tabularbells-0.0.6.js"> </script>
     <script type="text/javascript">
 
       var humanCompany = [
@@ -47,6 +47,7 @@
           noDataTemplate: '<i>No employees to show</i>',
           tableElement: $('#table-container'),
           pageSize: 5,
+          selectionMode: 'single',
           columnModel: columnModel,
           paginationElement: $('#pagination-container'),
           resultElement: $('#result-container'),
@@ -54,6 +55,10 @@
             'view': 'icon-eye-open',
             'delete': 'icon-remove'
           }
+        });
+
+        table.onSelectRow(function(row) { 
+          alert('Selected: ' + row.name);
         });
 
         table.bindAction('view', function(row) {

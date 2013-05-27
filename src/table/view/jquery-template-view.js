@@ -14,7 +14,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
   noContentRow: '<tr class="no-content-row"><td colspan="${noofColumns}">{{html noDataTemplate}}</td></tr>',
 
   rowTemplate: '{{each(i,row) data}}\
-    <tr class="data-row">\
+    <tr class="data-row"{{if selection}} style="cursor: pointer"{{/if}}>\
       {{each(idx,col) columnModel.columns}}\
         {{if !col.hidden}}\
           <td>{{html columnModel.renderCell(row, idx)}}</td>\
@@ -84,9 +84,16 @@ TB.JQueryTemplateView = TB.TableView.sub({
 
       return false;
     });
+    this.target.on('click', '.action-link', actionHandlerFn);
 
-    this.target.find('.action-link').on('click', actionHandlerFn);
-
+    if (this.isSelectionEnabled()) {
+      this.target.on('click', 'td', this.proxy(function(e) {
+	var row = $(e.currentTarget).closest('tr');
+	this.target.find('tr').removeClass(this.selectedRowClass);
+	row.addClass(this.selectedRowClass);
+	this.rowSelected(row, row.index()-1);
+      }));
+    }
 
     this.bindColumnFilterPopovers(command);
   },
@@ -99,7 +106,7 @@ TB.JQueryTemplateView = TB.TableView.sub({
     } else {
       this.target.find('.no-content-row').remove();
       this.target.find('.data-row').remove();
-      var templateData = $.extend({ layoutActions: this.proxy(this.layoutActions)}, command);
+      var templateData = $.extend({ layoutActions: this.proxy(this.layoutActions), selection: this.isSelectionEnabled()}, command);
       $(this.wrap(this.rowTemplate)).tmpl(templateData).appendTo(this.target.find('table tbody'));
     }
   },

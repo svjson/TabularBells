@@ -51,6 +51,9 @@ TB.Table = new TB.Class({
       throw new Error("No view specified.");
     }
     this.view.initialize(this.columnModel);
+    if (this.selectionMode) {
+      this.view.selectionMode = this.selectionMode;
+    }
     this.refreshTable();
   },
 
@@ -73,8 +76,13 @@ TB.Table = new TB.Class({
     }));
   },
 
+  onSelectRow: function(handler) {
+    this.view.bind('row-selected', this.proxy(function(eventData) {
+      handler(eventData.row);
+    }));
+  },
+
   columnFilterUpdated: function(event) {
-//    console.log('Column ' + event.index + ' now has filter ' + event.filter);
     this.dataSource.applyFilter(event);
   }
 

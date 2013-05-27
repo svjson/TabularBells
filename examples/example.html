@@ -4,11 +4,15 @@
       td {
        border: 1px solid gray;
       }
+
+      tr.selected td {
+        background-color: highlight;
+      }
     </style>
 
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"> </script>
-    <script type="text/javascript" src="../dist/tabularbells-0.0.3.js"> </script>
+    <script type="text/javascript" src="../dist/tabularbells-0.0.6.js"> </script>
 
     <script type="text/javascript">
 
@@ -47,13 +51,17 @@
       
         var table = new TB.Table({
           dataSource: new TB.ArrayDataSource(humanCompany),
-          view: new TB.JQueryTemplateView({target: $('#table-container')}),
+          view: new TB.JQueryTemplateView({target: $('#table-container'), selectionMode: 'single'}),
           columnModel: columnModel,
           paginationStrategy: new TB.PaginationBar({
             pageSize: 5,
             view: new TB.JQueryTemplatePaginationView({target: $('.pagination')})
           })
         });
+
+      table.onSelectRow(function(row) {
+        alert('Selected: ' + row.name);
+      });
 
         $('.human-company').click(function() {
           table.dataSource.loadData(humanCompany);
