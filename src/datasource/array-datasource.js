@@ -39,6 +39,7 @@ TB.ArrayDataSource = TB.DataSource.sub({
   loadData: function(data, meta) {
     this.data = data;
     this.cachedSize = data.length;
+    this.filterData();
 
     if (meta) {
       if (meta.total) {

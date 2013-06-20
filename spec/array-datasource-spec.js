@@ -61,5 +61,53 @@ describe("ArrayDataSource", function() {
     
   });
 
+  it('should update filtered data when new data is loaded', function() {
+    var dataSource = new TB.ArrayDataSource([
+      {name: 'Anders', type: 'employee'},
+      {name: 'Benny', type: 'customer'}
+    ]);
+    
+    dataSource.applyFilter({
+      index: 'type',
+      filter: 'customer'      
+    });
+
+    expect( dataSource.get({from: 0, size: 5})).toEqual([
+      {name: 'Benny', type: 'customer'}      
+    ]);
+
+    dataSource.loadData([
+      {name: 'Berit', type: 'employee'},
+      {name: 'Ebba', type: 'customer'}
+    ]);
+
+    expect( dataSource.get({from: 0, size: 5})).toEqual([
+      {name: 'Ebba', type: 'customer'}      
+    ]);
+  });
+
+  it('should be able to load new data without active filter', function() {
+    var dataSource = new TB.ArrayDataSource([
+      {name: 'Anders', type: 'employee'},
+      {name: 'Benny', type: 'customer'}
+    ]);
+    
+    expect( dataSource.get({from: 0, size: 5})).toEqual([
+      {name: 'Anders', type: 'employee'},
+      {name: 'Benny', type: 'customer'}
+    ]);
+
+    dataSource.loadData([
+      {name: 'Berit', type: 'employee'},
+      {name: 'Ebba', type: 'customer'}
+    ]);
+
+    expect( dataSource.get({from: 0, size: 5})).toEqual([
+      {name: 'Berit', type: 'employee'},
+      {name: 'Ebba', type: 'customer'}
+    ]);
+
+  });
+
 });
 
